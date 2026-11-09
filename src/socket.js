@@ -1,6 +1,6 @@
 import { io } from 'socket.io-client'
 
-export const socket = io('http://localhost:3001')
+export const socket = io('https://gila-telegram.onrender.com')
 
 socket.on('connect', () => {
   console.log('GILA: підключено до сервера!', socket.id)
