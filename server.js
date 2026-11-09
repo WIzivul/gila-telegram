@@ -934,8 +934,8 @@ app.get('/', (req, res) => {
   res.send('GILA server is running!')
 })
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 
-httpServer.listen(PORT, () => {
-  console.log(`GILA server запущений: http://localhost:${PORT}`)
+httpServer.listen(PORT, '0.0.0.0', () => {
+  console.log(`GILA server запущений на порті ${PORT}`)
 })
