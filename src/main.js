@@ -19,9 +19,13 @@ let botTimer = null
 let currentRoomCode = null
 let roomPlayers = []
 let roomHostId = null
+let roomPartnerId = null
 let onlineGameInfo = null
 let onlineHand = []
 let playerName = localStorage.getItem('gila-player-name') || ''
+
+// Команди онлайн-гри
+let onlineTeamAssignments = []
 
 // Онлайн-стан гри
 let onlinePublicState = {
@@ -420,8 +424,8 @@ function showTable() {
         </div>
 
         <div class="opponent left">
-          <span>Бот 3</span>
-          <span>${players[3].hand.length} карт</span>
+          <span>Бот 1</span>
+          <span>${players[1].hand.length} карт</span>
         </div>
 
         <div class="center">
@@ -458,8 +462,8 @@ function showTable() {
         </div>
 
         <div class="opponent right">
-          <span>Бот 1</span>
-          <span>${players[1].hand.length} карт</span>
+          <span>Бот 3</span>
+          <span>${players[3].hand.length} карт</span>
         </div>
 
         <div class="my-hand">
@@ -508,6 +512,7 @@ socket.on('room-updated', room => {
 
   roomPlayers = room.players
   roomHostId = room.hostId
+  roomPartnerId = room.partnerId || null
 
   showRoomLobby()
 })
@@ -518,6 +523,8 @@ socket.on('game-started', info => {
   onlineGameInfo = info
   onlineHand = []
 
+  onlineTeamAssignments = info.teamAssignments || []
+
   onlinePublicState = {
     currentTrick: [],
     currentTurn: info.callerIndex,
@@ -527,7 +534,8 @@ socket.on('game-started', info => {
     teamPiles: info.teamPiles || [[], []],
     roundNumber: info.roundNumber || 1,
     callerIndex: info.callerIndex,
-    gameFinished: false
+    gameFinished: false,
+    teamAssignments: info.teamAssignments || []
   }
 
   onlineStatusMessage =
@@ -647,6 +655,7 @@ function createOnlineRoom() {
 
     currentRoomCode = result.roomCode
     roomHostId = socket.id
+    roomPartnerId = null
 
     roomPlayers = [
       {
@@ -687,9 +696,48 @@ function joinOnlineRoom() {
   })
 }
 
+// ========================================
+// ВИБІР НАПАРНИКА
+// ========================================
+
+function selectOnlinePartner(partnerId) {
+  if (!currentRoomCode) return
+
+  if (socket.id !== roomHostId) {
+    alert('Тільки лідер кімнати може вибрати напарника.')
+    return
+  }
+
+  socket.emit('select-partner', {
+    roomCode: currentRoomCode,
+    partnerId
+  }, result => {
+    if (!result?.success) {
+      alert(result?.message || 'Не вдалося вибрати напарника')
+    }
+  })
+}
+
+// ========================================
+// ЛОБІ
+// ========================================
+
 function showRoomLobby() {
   const isHost = socket.id === roomHostId
   const isFull = roomPlayers.length === 4
+
+  const selectedPartner = roomPlayers.find(
+    player => player.id === roomPartnerId
+  )
+
+  const myPartner = selectedPartner
+    ? selectedPartner.name
+    : null
+
+  const opponents = roomPlayers.filter(player =>
+    player.id !== roomHostId &&
+    player.id !== roomPartnerId
+  )
 
   document.querySelector('#app').innerHTML = `
     <main class="menu">
@@ -726,21 +774,148 @@ function showRoomLobby() {
       <h2>Гравці: ${roomPlayers.length}/4</h2>
 
       <div style="width:min(90%,420px);margin:12px auto">
-        ${[0, 1, 2, 3].map(index => `
+
+        ${roomPlayers.map((player, index) => {
+          const isHostPlayer = player.id === roomHostId
+          const isSelectedPartner = player.id === roomPartnerId
+
+          const isOpponent =
+            roomPartnerId &&
+            !isHostPlayer &&
+            !isSelectedPartner
+
+          let teamLabel = ''
+
+          if (isHostPlayer && roomPartnerId) {
+            teamLabel = '🟢 КОМАНДА 1'
+          } else if (isSelectedPartner) {
+            teamLabel = '🟢 КОМАНДА 1'
+          } else if (isOpponent) {
+            teamLabel = '🔴 КОМАНДА 2'
+          }
+
+          return `
+            <div style="
+              padding:12px;
+              margin:7px 0;
+              border:1px solid ${
+                isSelectedPartner
+                  ? '#35d477'
+                  : isOpponent
+                    ? 'rgba(255,100,100,.55)'
+                    : 'rgba(32,217,237,.35)'
+              };
+              border-radius:10px;
+              color:#fff;
+              background:${
+                isSelectedPartner
+                  ? 'rgba(30,120,65,.18)'
+                  : 'rgba(255,255,255,.04)'
+              };
+              text-align:left;
+            ">
+
+              <div style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                gap:8px;
+                flex-wrap:wrap;
+              ">
+                <strong>
+                  ${index + 1}. ${escapeHtml(player.name)}
+                  ${isHostPlayer ? ' 👑' : ''}
+                </strong>
+
+                <span style="
+                  font-size:11px;
+                  font-weight:bold;
+                  color:${
+                    isSelectedPartner
+                      ? '#35d477'
+                      : isOpponent
+                        ? '#ff8585'
+                        : '#9bb7c8'
+                  };
+                ">
+                  ${teamLabel}
+                </span>
+              </div>
+
+              ${isHost && isFull && !isHostPlayer ? `
+                <button
+                  class="select-partner-btn"
+                  data-player-id="${escapeHtml(player.id)}"
+                  style="
+                    width:100%;
+                    margin-top:10px;
+                    padding:9px;
+                    border:1px solid ${
+                      isSelectedPartner ? '#35d477' : '#20d9ed'
+                    };
+                    border-radius:8px;
+                    background:${
+                      isSelectedPartner
+                        ? 'rgba(53,212,119,.2)'
+                        : 'rgba(32,217,237,.1)'
+                    };
+                    color:${
+                      isSelectedPartner ? '#35d477' : '#20d9ed'
+                    };
+                    font-weight:bold;
+                    cursor:pointer;
+                  "
+                >
+                  ${isSelectedPartner
+                    ? '✓ ТВОЙ НАПАРНИК'
+                    : 'ОБРАТИ НАПАРНИКОМ'}
+                </button>
+              ` : ''}
+            </div>
+          `
+        }).join('')}
+
+        ${[0, 1, 2, 3].slice(roomPlayers.length).map(index => `
           <div style="
             padding:12px;
             margin:7px 0;
-            border:1px solid rgba(32,217,237,.35);
+            border:1px dashed rgba(32,217,237,.25);
             border-radius:10px;
-            color:#fff;
-            background:rgba(255,255,255,.04);
+            color:#8aa1b0;
           ">
-            ${roomPlayers[index]
-              ? `${index + 1}. ${escapeHtml(roomPlayers[index].name)}${roomPlayers[index].id === roomHostId ? ' 👑' : ''}`
-              : `${index + 1}. Очікуємо гравця...`}
+            ${roomPlayers.length + index + 1}. Очікуємо гравця...
           </div>
         `).join('')}
+
       </div>
+
+      ${
+        isFull
+          ? myPartner
+            ? `
+              <div style="
+                width:min(90%,420px);
+                margin:15px auto;
+                padding:12px;
+                border:1px solid #35d477;
+                border-radius:10px;
+                color:#35d477;
+                background:rgba(30,120,65,.12);
+              ">
+                🟢 Твій напарник: <strong>${escapeHtml(myPartner)}</strong>
+                <br>
+                <small>Інші два гравці — суперники.</small>
+              </div>
+            `
+            : `
+              <p style="color:#20d9ed">
+                ${isHost
+                  ? 'Вибери одного гравця собі в напарники.'
+                  : 'Очікуємо, поки лідер вибере напарника...'}
+              </p>
+            `
+          : ''
+      }
 
       <p class="subtitle">
         ${isFull
@@ -749,9 +924,22 @@ function showRoomLobby() {
       </p>
 
       ${isHost && isFull ? `
-        <button id="start-online-game">
+        <button
+          id="start-online-game"
+          ${!roomPartnerId ? 'disabled' : ''}
+          style="
+            opacity:${roomPartnerId ? '1' : '.45'};
+            cursor:${roomPartnerId ? 'pointer' : 'not-allowed'};
+          "
+        >
           ПОЧАТИ ГРУ
         </button>
+
+        ${!roomPartnerId ? `
+          <p class="subtitle">
+            Спочатку потрібно вибрати напарника.
+          </p>
+        ` : ''}
       ` : ''}
 
       ${!isHost ? `
@@ -773,9 +961,16 @@ function showRoomLobby() {
     }
   })
 
+  // Кнопки вибору напарника
+  document.querySelectorAll('.select-partner-btn').forEach(button => {
+    button.addEventListener('click', () => {
+      selectOnlinePartner(button.dataset.playerId)
+    })
+  })
+
   const startButton = document.querySelector('#start-online-game')
 
-  if (startButton) {
+  if (startButton && roomPartnerId) {
     startButton.addEventListener('click', () => {
       socket.emit('start-game', {
         roomCode: currentRoomCode
@@ -837,6 +1032,29 @@ function playOnlineCard(card) {
 
     showOnlineGame()
   })
+}
+
+// ========================================
+// ВИЗНАЧЕННЯ КОМАНДИ В ОНЛАЙН-ГРІ
+// ========================================
+
+function getOnlinePlayerTeam(playerIndex) {
+  const assignment = onlineTeamAssignments.find(
+    item => item.playerIndex === playerIndex
+  )
+
+  return assignment ? assignment.team : null
+}
+
+function getOnlineTeamNames(teamIndex) {
+  if (!onlineGameInfo) return ''
+
+  return onlineGameInfo.players
+    .filter((player, index) =>
+      getOnlinePlayerTeam(index) === teamIndex
+    )
+    .map(player => player.name)
+    .join(' + ')
 }
 
 // ========================================
@@ -958,6 +1176,8 @@ function showOnlineGame() {
 
   if (myIndex === -1) return
 
+  const myTeam = getOnlinePlayerTeam(myIndex)
+
   const caller = myIndex === onlineGameInfo.callerIndex
   const trumpChosen = Boolean(onlineGameInfo.trumpSuit)
 
@@ -1037,11 +1257,17 @@ function showOnlineGame() {
     highlightedCards.map(card => `${card.rank}${card.suit}`)
   )
 
-  const positions = ['bottom', 'right', 'top', 'left']
+  // Порядок місць за годинниковою стрілкою:
+  // ти знизу → наступний гравець зліва →
+  // третій зверху → четвертий справа.
+  const positions = ['bottom', 'left', 'top', 'right']
 
   const playerElements = onlineGameInfo.players.map((player, index) => {
     const relativePosition = (index - myIndex + 4) % 4
     const position = positions[relativePosition]
+
+    const playerTeam = getOnlinePlayerTeam(index)
+    const isMyTeam = playerTeam === myTeam
 
     return `
       <div class="online-player ${position} ${index === myIndex ? 'me' : ''} ${index === onlinePublicState.currentTurn ? 'active-player' : ''}"
@@ -1060,6 +1286,14 @@ function showOnlineGame() {
         ${index === onlineGameInfo.callerIndex ? ' 👑' : ''}
 
         ${index === myIndex ? '<br><small>Ти</small>' : ''}
+
+        <br>
+
+        <small>
+          ${playerTeam !== null
+            ? `Команда ${playerTeam + 1}${isMyTeam ? ' 🟢' : ' 🔴'}`
+            : ''}
+        </small>
 
         <br>
 
@@ -1150,6 +1384,17 @@ function showOnlineGame() {
       ">
         <span>Команда 1: ${teamScores[0]}</span>
         <span>Команда 2: ${teamScores[1]}</span>
+      </div>
+
+      <div style="
+        text-align:center;
+        color:#b8dce5;
+        font-size:12px;
+        margin:5px auto 10px;
+      ">
+        🟢 ${escapeHtml(getOnlineTeamNames(0))}
+        &nbsp; | &nbsp;
+        🔴 ${escapeHtml(getOnlineTeamNames(1))}
       </div>
 
       <div class="online-deal-tricks">

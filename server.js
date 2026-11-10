@@ -69,6 +69,64 @@ function shuffle(deck) {
   return deck
 }
 
+// ==========================================
+// КОМАНДИ
+// ==========================================
+
+// Визначення команди гравця за його індексом
+function getPlayerTeam(room, playerIndex) {
+  if (!room.players[playerIndex]) return null
+
+  const playerId = room.players[playerIndex].id
+
+  if (!room.teamIds) return null
+
+  if (room.teamIds[0].includes(playerId)) {
+    return 0
+  }
+
+  if (room.teamIds[1].includes(playerId)) {
+    return 1
+  }
+
+  return null
+}
+
+// Отримання індексу напарника
+function getPartnerIndex(room, playerIndex) {
+  if (!room.players[playerIndex] || !room.teamIds) {
+    return null
+  }
+
+  const playerId = room.players[playerIndex].id
+  const team = getPlayerTeam(room, playerIndex)
+
+  if (team === null) return null
+
+  const partnerId = room.teamIds[team].find(
+    id => id !== playerId
+  )
+
+  return room.players.findIndex(
+    player => player.id === partnerId
+  )
+}
+
+// Команди для передачі клієнтам
+function getTeamAssignments(room) {
+  if (!room.teamIds) return null
+
+  return room.players.map((player, index) => ({
+    playerId: player.id,
+    playerIndex: index,
+    team: getPlayerTeam(room, index)
+  }))
+}
+
+// ==========================================
+// КАРТИ
+// ==========================================
+
 // Перевірка козиря
 function isTrump(card, trumpSuit) {
   return (
@@ -175,11 +233,15 @@ function getPublicGameState(roomCode, room) {
     teamPiles: copyTeamPiles(room),
     callerIndex: room.callerIndex,
     roundNumber: room.roundNumber,
-    gameFinished: room.gameFinished
+    gameFinished: room.gameFinished,
+    teamAssignments: getTeamAssignments(room)
   }
 }
 
-// Оновлення кімнати
+// ==========================================
+// ОНОВЛЕННЯ КІМНАТИ
+// ==========================================
+
 function updateRoom(roomCode) {
   const room = rooms.get(roomCode)
 
@@ -188,15 +250,26 @@ function updateRoom(roomCode) {
   io.to(roomCode).emit('room-updated', {
     code: roomCode,
     hostId: room.host,
+    partnerId: room.partnerId,
+
     players: room.players.map(player => ({
       id: player.id,
       name: player.name
     })),
-    isFull: room.players.length === 4
+
+    teamAssignments: getTeamAssignments(room),
+
+    isFull: room.players.length === 4,
+    canStart:
+      room.players.length === 4 &&
+      room.partnerId !== null
   })
 }
 
-// Роздача карт
+// ==========================================
+// РОЗДАЧА КАРТ
+// ==========================================
+
 function dealCards(roomCode, room) {
   const deck = shuffle(createDeck())
 
@@ -213,23 +286,27 @@ function dealCards(roomCode, room) {
 
   room.dealTricks = [0, 0]
 
-  // Очищаємо стопки на нову роздачу
   room.teamPiles = [[], []]
 
   room.roundFinishing = false
 
   const gameInfo = {
     roomCode,
+
     players: room.players.map(player => ({
       id: player.id,
       name: player.name
     })),
+
     callerIndex: room.callerIndex,
     trumpSuit: null,
+
     teamScores: [...room.teamScores],
     dealTricks: [...room.dealTricks],
     teamPiles: copyTeamPiles(room),
-    roundNumber: room.roundNumber
+
+    roundNumber: room.roundNumber,
+    teamAssignments: getTeamAssignments(room)
   }
 
   io.to(roomCode).emit('game-started', gameInfo)
@@ -246,27 +323,34 @@ function dealCards(roomCode, room) {
   )
 }
 
-// Очки за кількістю взяток
+// ==========================================
+// НАРАХУВАННЯ ОЧОК
+// ==========================================
+
 function calculateRoundPoints(tricks, isCallerTeam) {
   if (tricks === 0) return 36
   if (tricks === 1) return 24
   if (tricks === 2) return 12
 
   if (isCallerTeam) {
-    // Якщо той, хто хвалив, прохвалився
     return 12
   }
 
-  // Якщо той, хто хвалив, не прохвалився
   if (tricks === 3 || tricks === 4) return 6
 
   return 0
 }
 
-// Визначення наступного гравця, який хвалить
+// ==========================================
+// НАСТУПНИЙ ХВАЛЕЦЬ
+// ==========================================
+
 function getNextCaller(room, previousCaller, oldScores) {
   const score0 = room.teamScores[0]
   const score1 = room.teamScores[1]
+
+  const callerTeam = getPlayerTeam(room, previousCaller)
+  const opponentTeam = 1 - callerTeam
 
   // Будка: однаковий рахунок, кратний 12
   if (
@@ -277,20 +361,37 @@ function getNextCaller(room, previousCaller, oldScores) {
     return previousCaller
   }
 
-  // Якщо команда вперше досягла 30 або більше
+  // Правило 30: команда вперше досягла 30 або більше
   const reached30 =
     (oldScores[0] < 30 && score0 >= 30) ||
     (oldScores[1] < 30 && score1 >= 30)
 
   if (reached30) {
-    return (previousCaller + 2) % 4
+    const partnerIndex = getPartnerIndex(room, previousCaller)
+
+    if (partnerIndex !== -1 && partnerIndex !== null) {
+      return partnerIndex
+    }
   }
 
-  // Звичайна черга
+  // Команда хвалившого відстає — той самий гравець
+  if (room.teamScores[callerTeam] < room.teamScores[opponentTeam]) {
+    return previousCaller
+  }
+
+  // Команда хвалившого випереджає — наступний за годинниковою
+  if (room.teamScores[callerTeam] > room.teamScores[opponentTeam]) {
+    return (previousCaller + 1) % 4
+  }
+
+  // Рівний рахунок, але не Будка
   return (previousCaller + 1) % 4
 }
 
-// Завершення роздачі
+// ==========================================
+// ЗАВЕРШЕННЯ РОЗДАЧІ
+// ==========================================
+
 function finishRound(roomCode, room) {
   if (room.roundFinishing || room.gameFinished) {
     return
@@ -299,7 +400,7 @@ function finishRound(roomCode, room) {
   room.roundFinishing = true
 
   const callerIndex = room.callerIndex
-  const callerTeam = callerIndex % 2
+  const callerTeam = getPlayerTeam(room, callerIndex)
   const opponentTeam = 1 - callerTeam
 
   const callerTricks = room.dealTricks[callerTeam]
@@ -311,8 +412,6 @@ function finishRound(roomCode, room) {
   let pointsAdded
 
   if (callerSucceeded) {
-    // Той, хто хвалив, прохвалився.
-    // Очки отримує його команда.
     scoringTeam = callerTeam
 
     pointsAdded = calculateRoundPoints(
@@ -320,8 +419,6 @@ function finishRound(roomCode, room) {
       true
     )
   } else {
-    // Той, хто хвалив, не прохвалився.
-    // Очки отримують суперники.
     scoringTeam = opponentTeam
 
     pointsAdded = calculateRoundPoints(
@@ -351,6 +448,8 @@ function finishRound(roomCode, room) {
     teamPiles: copyTeamPiles(room),
 
     callerSucceeded,
+
+    teamAssignments: getTeamAssignments(room),
 
     message: callerSucceeded
       ? `Хвала виконана! Команда ${callerTeam + 1} отримує +${pointsAdded} очок.`
@@ -396,6 +495,7 @@ function finishRound(roomCode, room) {
       winnerTeam,
       losingTeam,
       specialLoss,
+      teamAssignments: getTeamAssignments(room),
 
       message: specialLoss
         ? 'ТУХЛІ ЯЙЦЯ! Команда програла, набравши 60 або більше очок!'
@@ -407,13 +507,11 @@ function finishRound(roomCode, room) {
     return
   }
 
-  // Повідомляємо про результат роздачі
   io.to(roomCode).emit('round-finished', {
     ...roundResult,
     gameFinished: false
   })
 
-  // Визначаємо наступного хвалця
   room.callerIndex = getNextCaller(
     room,
     callerIndex,
@@ -424,7 +522,6 @@ function finishRound(roomCode, room) {
     `Наступним хвалить гравець ${room.callerIndex + 1}`
   )
 
-  // Наступна роздача
   room.trickTimer = setTimeout(() => {
     const currentRoom = rooms.get(roomCode)
 
@@ -438,16 +535,25 @@ function finishRound(roomCode, room) {
   }, 4500)
 }
 
-// Підключення гравців
+// ==========================================
+// SOCKET.IO
+// ==========================================
+
 io.on('connection', socket => {
   console.log('Підключився гравець:', socket.id)
 
-  // Створення кімнати
+  // ========================================
+  // СТВОРЕННЯ КІМНАТИ
+  // ========================================
+
   socket.on('create-room', (playerName, callback) => {
     const roomCode = generateRoomCode()
 
     const room = {
       host: socket.id,
+
+      partnerId: null,
+      teamIds: null,
 
       players: [
         {
@@ -489,7 +595,10 @@ io.on('connection', socket => {
     updateRoom(roomCode)
   })
 
-  // Приєднання до кімнати
+  // ========================================
+  // ПРИЄДНАННЯ ДО КІМНАТИ
+  // ========================================
+
   socket.on('join-room', ({ roomCode, playerName }, callback) => {
     const code = String(roomCode || '').toUpperCase().trim()
     const room = rooms.get(code)
@@ -546,7 +655,83 @@ io.on('connection', socket => {
     updateRoom(code)
   })
 
-  // Початок гри
+  // ========================================
+  // ВИБІР НАПАРНИКА
+  // ========================================
+
+  socket.on('select-partner', ({ roomCode, partnerId }, callback) => {
+    const code = String(roomCode || '').toUpperCase().trim()
+    const room = rooms.get(code)
+
+    if (!room) {
+      callback?.({
+        success: false,
+        message: 'Кімнату не знайдено'
+      })
+
+      return
+    }
+
+    if (room.started) {
+      callback?.({
+        success: false,
+        message: 'Гра вже розпочалася'
+      })
+
+      return
+    }
+
+    if (room.host !== socket.id) {
+      callback?.({
+        success: false,
+        message: 'Напарника може вибрати тільки лідер кімнати'
+      })
+
+      return
+    }
+
+    if (room.players.length !== 4) {
+      callback?.({
+        success: false,
+        message: 'Спочатку потрібно зібрати 4 гравців'
+      })
+
+      return
+    }
+
+    const partnerExists = room.players.some(
+      player =>
+        player.id === partnerId &&
+        player.id !== room.host
+    )
+
+    if (!partnerExists) {
+      callback?.({
+        success: false,
+        message: 'Неправильний вибір напарника'
+      })
+
+      return
+    }
+
+    room.partnerId = partnerId
+
+    updateRoom(code)
+
+    callback?.({
+      success: true,
+      message: 'Напарника вибрано'
+    })
+
+    console.log(
+      `У кімнаті ${code} лідер вибрав напарника: ${partnerId}`
+    )
+  })
+
+  // ========================================
+  // ПОЧАТОК ГРИ
+  // ========================================
+
   socket.on('start-game', ({ roomCode }, callback) => {
     const code = String(roomCode || '').toUpperCase().trim()
     const room = rooms.get(code)
@@ -578,6 +763,15 @@ io.on('connection', socket => {
       return
     }
 
+    if (!room.partnerId) {
+      callback?.({
+        success: false,
+        message: 'Спочатку вибери собі напарника'
+      })
+
+      return
+    }
+
     if (room.started) {
       callback?.({
         success: false,
@@ -586,6 +780,19 @@ io.on('connection', socket => {
 
       return
     }
+
+    // Фіксуємо команди на весь матч
+    const opponents = room.players
+      .filter(player =>
+        player.id !== room.host &&
+        player.id !== room.partnerId
+      )
+      .map(player => player.id)
+
+    room.teamIds = [
+      [room.host, room.partnerId],
+      opponents
+    ]
 
     room.started = true
 
@@ -632,7 +839,8 @@ io.on('connection', socket => {
       dealTricks: [...room.dealTricks],
       teamPiles: copyTeamPiles(room),
 
-      roundNumber: room.roundNumber
+      roundNumber: room.roundNumber,
+      teamAssignments: getTeamAssignments(room)
     }
 
     io.to(code).emit('game-started', gameInfo)
@@ -649,9 +857,22 @@ io.on('connection', socket => {
     })
 
     console.log('Гра розпочалася:', code)
+
+    console.log(
+      'Команда 1:',
+      room.teamIds[0]
+    )
+
+    console.log(
+      'Команда 2:',
+      room.teamIds[1]
+    )
   })
 
-  // Вибір козиря
+  // ========================================
+  // ВИБІР КОЗИРЯ
+  // ========================================
+
   socket.on('choose-trump', ({ roomCode, suit }, callback) => {
     const code = String(roomCode || '').toUpperCase().trim()
     const room = rooms.get(code)
@@ -711,7 +932,10 @@ io.on('connection', socket => {
     console.log(`Козир у кімнаті ${code}: ${suit}`)
   })
 
-  // Викладання карти
+  // ========================================
+  // ВИКЛАДАННЯ КАРТИ
+  // ========================================
+
   socket.on('play-card', ({ roomCode, card }, callback) => {
     const code = String(roomCode || '').toUpperCase().trim()
     const room = rooms.get(code)
@@ -810,7 +1034,6 @@ io.on('connection', socket => {
       return
     }
 
-    // Видаляємо карту з руки
     hand.splice(cardIndex, 1)
 
     io.to(socket.id).emit('private-hand', {
@@ -818,7 +1041,6 @@ io.on('connection', socket => {
       hand: room.hands[playerIndex]
     })
 
-    // Додаємо карту на стіл
     room.currentTrick.push({
       playerIndex,
       playerName: room.players[playerIndex].name,
@@ -842,7 +1064,7 @@ io.on('connection', socket => {
       const winner = getTrickWinner(room)
 
       const winningPlayer = winner.playerIndex
-      const winningTeam = winningPlayer % 2
+      const winningTeam = getPlayerTeam(room, winningPlayer)
 
       room.dealTricks[winningTeam]++
 
@@ -870,7 +1092,6 @@ io.on('connection', socket => {
           return
         }
 
-        // Зберігаємо всі чотири карти у стопку команди
         currentRoom.teamPiles[winningTeam].push(
           currentRoom.currentTrick.map(item => ({
             ...item,
@@ -897,7 +1118,10 @@ io.on('connection', socket => {
     }
   })
 
-  // Відключення гравця
+  // ========================================
+  // ВІДКЛЮЧЕННЯ ГРАВЦЯ
+  // ========================================
+
   socket.on('disconnect', () => {
     const roomCode = socket.data.roomCode
 
@@ -919,17 +1143,37 @@ io.on('connection', socket => {
       rooms.delete(roomCode)
 
       console.log('Кімната видалена:', roomCode)
+
+      return
+    }
+
+    if (!room.started) {
+      // Якщо вийшов лідер — передаємо лідерство
+      // та скидаємо попередній вибір напарника
+      if (room.host === socket.id) {
+        room.host = room.players[0].id
+        room.partnerId = null
+      }
+
+      // Якщо вийшов обраний напарник
+      if (room.partnerId === socket.id) {
+        room.partnerId = null
+      }
     } else {
+      // Після початку гри команди не змінюються
       if (room.host === socket.id) {
         room.host = room.players[0].id
       }
-
-      updateRoom(roomCode)
     }
+
+    updateRoom(roomCode)
   })
 })
 
-// Перевірка сервера
+// ==========================================
+// ПЕРЕВІРКА СЕРВЕРА
+// ==========================================
+
 app.get('/', (req, res) => {
   res.send('GILA server is running!')
 })
