@@ -1896,3 +1896,27 @@ button {
   color: #ffedcf !important;
   box-shadow: 0 4px 10px #0009 !important;
 }
+/* ==========================================
+   ФОТОГРАФІЯ ПИВНОГО PUB У ГОЛОВНОМУ МЕНЮ
+========================================== */
+
+.menu-pub {
+  background:
+    linear-gradient(
+      rgba(0, 0, 0, 0.35),
+      rgba(0, 0, 0, 0.65)
+    ),
+    url('/pub-background.jpg') center center / cover no-repeat !important;
+}
+
+.menu-pub::before {
+  background:
+    linear-gradient(rgba(20, 10, 5, 0.12), rgba(20, 10, 5, 0.12)),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      rgba(0, 0, 0, .12) 2px,
+      transparent 5px,
+      rgba(120, 75, 45, .06) 9px
+    );
+}
