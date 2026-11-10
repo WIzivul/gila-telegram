@@ -1,3 +1,7 @@
+/* ==========================================
+   ОСНОВНІ НАЛАШТУВАННЯ
+========================================== */
+
 * {
   box-sizing: border-box;
 }
@@ -6,8 +10,8 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: #080f1e;
-  color: white;
+  background: #100905;
+  color: #ead8c0;
   font-family: Arial, sans-serif;
 }
 
@@ -19,57 +23,339 @@ button {
   min-height: 100vh;
 }
 
-/* ГОЛОВНЕ МЕНЮ */
+/* ==========================================
+   ГОЛОВНЕ МЕНЮ — СТАРОВИННИЙ PUB
+========================================== */
 
-.menu {
+.menu-pub {
+  position: relative;
+  isolation: isolate;
   min-height: 100vh;
+  min-height: 100dvh;
+  padding: 55px 15px 35px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  gap: 20px;
-  background: radial-gradient(circle, #142b49, #080f1e 75%);
+  justify-content: flex-start;
+  gap: 0;
+  overflow: hidden;
+
+  background:
+    radial-gradient(ellipse at center, transparent 20%, #000b 100%),
+    repeating-linear-gradient(90deg,
+      transparent 0px,
+      rgba(0, 0, 0, .18) 3px,
+      transparent 7px,
+      rgba(255, 255, 255, .025) 10px),
+    linear-gradient(135deg, #302018, #100a07 45%, #29180f);
+
+  color: #e8d5b7;
 }
 
-.menu h1 {
-  color: #00d9ff;
-  font-size: 64px;
-  letter-spacing: 12px;
-  text-shadow: 0 0 25px #00d9ff;
+.menu-pub::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    repeating-linear-gradient(0deg,
+      transparent 0px,
+      rgba(0, 0, 0, .18) 2px,
+      transparent 5px,
+      rgba(120, 75, 45, .08) 9px);
+  pointer-events: none;
 }
 
-.subtitle,
-.version {
-  color: #9bb5ce;
+/* Декоративна карта */
+
+.menu-decoration {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  width: 155px;
+  height: 115px;
+  transform: translateX(-50%) rotate(-7deg);
+  z-index: 0;
 }
 
-.menu button {
-  width: 260px;
-  padding: 16px;
-  border: 1px solid #00d9ff;
+.menu-decoration-card {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #b6a58b;
   border-radius: 12px;
-  background: #102440;
-  color: white;
-  font-size: 17px;
+
+  background:
+    repeating-linear-gradient(45deg,
+      #d6c7aa,
+      #d6c7aa 4px,
+      #c9b99b 5px,
+      #c9b99b 8px);
+
+  color: #29201a;
+  box-shadow: 0 5px 15px #000b;
+  font-family: Georgia, serif;
+}
+
+.menu-decoration-card strong {
+  font-size: 55px;
+}
+
+.menu-decoration-card span {
+  font-size: 13px;
+  font-weight: bold;
+}
+
+/* Профіль */
+
+.menu-pub .profile-bar {
+  position: relative;
+  z-index: 2;
+  width: min(95%, 430px);
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 125px;
+  margin-bottom: 30px;
+  padding: 8px 15px;
+  border: 3px solid #77716b;
+  border-radius: 18px;
+
+  background: linear-gradient(180deg, #44413f, #1b1918 55%, #302c29);
+
+  box-shadow:
+    0 5px 15px #000c,
+    inset 0 0 0 2px #171514,
+    inset 0 0 0 4px #77716b;
+}
+
+.profile-avatar {
+  flex-shrink: 0;
+  width: 65px;
+  height: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid #a69b8e;
+  border-radius: 50%;
+  background: radial-gradient(circle, #665247, #211713);
+  color: #e8c9a4;
+  font-family: Georgia, serif;
+  font-size: 30px;
+  font-weight: bold;
+  box-shadow: 0 0 0 3px #282321, 0 0 10px #000;
+}
+
+.menu-pub .profile-bar input {
+  width: 100%;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #e6c6a4;
+  font-family: Georgia, serif;
+  font-size: clamp(17px, 5vw, 27px);
+  text-align: center;
+}
+
+/* Вивіска GILA */
+
+.menu-sign {
+  position: relative;
+  z-index: 1;
+  width: min(95%, 500px);
+  padding: 20px 12px;
+  text-align: center;
+  border: 7px double #806052;
+  border-radius: 25px;
+
+  background:
+    repeating-linear-gradient(0deg,
+      rgba(255, 255, 255, .025) 0px,
+      transparent 3px,
+      rgba(0, 0, 0, .2) 6px),
+    linear-gradient(135deg, #39241b, #170d09 50%, #382219);
+
+  box-shadow:
+    0 12px 25px #000b,
+    inset 0 0 0 5px #1a100c,
+    inset 0 0 20px #000;
+}
+
+.menu-sign h1 {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(65px, 17vw, 105px);
+  letter-spacing: 5px;
+
+  background: linear-gradient(180deg,
+      #fff0c8,
+      #d99b61 45%,
+      #a45b32 75%,
+      #f2c18a);
+
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 1px #70422c;
+  filter: drop-shadow(0 4px 2px #000);
+}
+
+.menu-sign p {
+  display: inline-block;
+  margin: 10px 0;
+  padding: 9px 18px;
+  border: 2px solid #84604c;
+  border-radius: 8px;
+  background: #21130e;
+  color: #e8d1b5;
+  font-family: Georgia, serif;
+  font-size: clamp(12px, 3.5vw, 18px);
+  letter-spacing: 2px;
+}
+
+.sign-ornament {
+  color: #c99a75;
+  font-size: 27px;
+  letter-spacing: 5px;
+}
+
+.bottom-ornament {
+  margin-top: 5px;
+}
+
+/* Кнопки меню */
+
+.menu-actions {
+  width: min(95%, 470px);
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-top: 35px;
+}
+
+.menu-pub .pub-button {
+  position: relative;
+  width: 100%;
+  min-height: 75px;
+  padding: 15px 10px;
+  border: 3px solid #b47b51;
+  border-radius: 16px;
+
+  background: linear-gradient(180deg, #603a27, #28150e 50%, #48291b);
+
+  color: #e8d5bd;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(15px, 4vw, 22px);
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 3px #000;
+
+  box-shadow:
+    0 6px 12px #000a,
+    inset 0 0 0 3px #29150e,
+    inset 0 0 0 5px #a46d48,
+    inset 0 0 15px #0008;
+
   cursor: pointer;
+  transition: transform .2s ease, filter .2s ease;
 }
 
-.menu button:hover {
-  background: #006d91;
+.menu-pub .pub-button::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 1px solid #d4a47b;
+  border-radius: 10px;
+  pointer-events: none;
 }
 
-/* ВИБІР КОЗИРЯ */
+.menu-pub .pub-button:hover {
+  filter: brightness(1.3);
+  transform: translateY(-3px);
+}
+
+.menu-pub .pub-button:active {
+  transform: translateY(2px);
+}
+
+/* Панель коду кімнати */
+
+.menu-pub .join-panel {
+  width: min(95%, 470px);
+  margin-top: 35px;
+  padding: 18px;
+  border: 3px solid #73503b;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #40271b, #170c08 60%, #392116);
+  box-shadow: 0 8px 20px #000b, inset 0 0 15px #000;
+}
+
+.menu-pub .join-panel h2 {
+  margin: 5px 0 15px;
+  color: #e4c7a5;
+  font-family: Georgia, serif;
+  font-size: clamp(17px, 4vw, 23px);
+  text-align: center;
+}
+
+.menu-pub .join-panel input {
+  display: block;
+  width: 100%;
+  height: 60px;
+  margin-bottom: 18px;
+  padding: 12px;
+  border: 2px solid #684633;
+  border-radius: 12px;
+  outline: none;
+  background: #180d09;
+  color: #f0dfca;
+  font-family: Georgia, serif;
+  font-size: 18px;
+  text-align: center;
+}
+
+.menu-pub .join-panel input::placeholder {
+  color: #9f8b78;
+}
+
+.menu-pub .join-panel input:focus {
+  border-color: #c18a5d;
+}
+
+.menu-pub .join-button {
+  min-height: 75px;
+}
+
+.menu-pub .version {
+  position: relative;
+  z-index: 1;
+  margin-top: 35px;
+  color: #c6ad93;
+  font-family: Georgia, serif;
+  font-size: 17px;
+  text-shadow: 0 2px 5px #000;
+}
+
+/* ==========================================
+   ВИБІР КОЗИРЯ
+========================================== */
 
 .trump-picker {
   min-height: 100vh;
   text-align: center;
   padding: 60px 20px;
-  background: radial-gradient(circle, #142b49, #080f1e 75%);
+  background: linear-gradient(135deg, #29170f, #100906 45%, #382116);
 }
 
 .trump-picker h1 {
-  color: #00d9ff;
+  color: #e8bd88;
   font-size: 42px;
+  font-family: Georgia, serif;
 }
 
 .trump-picker h2 {
@@ -87,30 +373,53 @@ button {
   width: 75px;
   height: 85px;
   border-radius: 15px;
-  border: 2px solid #00d9ff;
-  background: #101d35;
-  color: white;
+  border: 2px solid #b58a5d;
+  background: linear-gradient(145deg, #503421, #21130c);
+  color: #f0dfc8;
   font-size: 42px;
   cursor: pointer;
 }
 
 .suit-btn:hover {
-  background: #00a9cc;
+  background: linear-gradient(145deg, #795032, #382318);
   transform: translateY(-5px);
 }
 
-/* КОЛЬОРИ */
+/* Кольори */
 
 .red {
   color: #ff4b67 !important;
 }
 
-/* ІГРОВИЙ ІНТЕРФЕЙС */
+/* ==========================================
+   ЗВИЧАЙНА ГРА ПРОТИ БОТІВ
+========================================== */
 
 .game {
   min-height: 100vh;
-  background: radial-gradient(circle, #123d3b, #080f1e 85%);
+  position: relative;
+  isolation: isolate;
   overflow: hidden;
+
+  background:
+    radial-gradient(ellipse at 50% 35%, rgba(163, 103, 59, .2), transparent 65%),
+    radial-gradient(ellipse at center, transparent 25%, rgba(0, 0, 0, .8) 100%),
+    linear-gradient(135deg, #321e13, #120a06 50%, #2b190f);
+}
+
+.game::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg,
+      transparent 0px,
+      rgba(0, 0, 0, .13) 3px,
+      transparent 7px,
+      rgba(150, 95, 55, .07) 12px),
+    radial-gradient(ellipse at 50% 15%, rgba(183, 111, 57, .12), transparent 60%);
 }
 
 .game-header {
@@ -121,17 +430,23 @@ button {
 }
 
 .game-header h1 {
-  color: #00d9ff;
+  color: #e8bd88;
+  font-family: Georgia, serif;
   letter-spacing: 5px;
+  text-shadow: 0 2px 5px #000;
 }
 
 .game-header button {
   padding: 10px 20px;
   border-radius: 8px;
-  border: 1px solid #00d9ff;
-  background: #101d35;
-  color: white;
+  border: 2px solid #9b704e;
+  background: linear-gradient(180deg, #503421, #21130c);
+  color: #f0ddc5;
   cursor: pointer;
+}
+
+.game-header button:hover {
+  background: linear-gradient(180deg, #765034, #382116);
 }
 
 .scoreboard {
@@ -139,7 +454,7 @@ button {
   justify-content: center;
   gap: 35px;
   padding: 10px;
-  color: #00d9ff;
+  color: #e8c49e;
 }
 
 .table {
@@ -151,7 +466,7 @@ button {
   padding: 20px;
 }
 
-/* ГРАВЦІ */
+/* Гравці */
 
 .opponent {
   position: absolute;
@@ -159,9 +474,14 @@ button {
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  color: #b8d8e8;
+  padding: 10px 14px;
+  border: 2px solid #79553c;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #493022, #1b100b);
+  color: #ead8c0;
   font-size: 14px;
   z-index: 2;
+  box-shadow: 0 5px 15px #0009;
 }
 
 .opponent.top {
@@ -180,17 +500,17 @@ button {
   top: 42%;
 }
 
-/* ЦЕНТР СТОЛУ */
+/* Центр столу */
 
 .center {
   width: min(420px, 90%);
   min-height: 180px;
   text-align: center;
   padding: 25px 15px;
-  border: 1px solid #00d9ff55;
+  border: 3px solid #886347;
   border-radius: 20px;
-  background: #061a25aa;
-  box-shadow: 0 0 30px #00d9ff22;
+  background: linear-gradient(145deg, #493022, #1b100b);
+  box-shadow: 0 8px 25px #000b, inset 0 0 20px #0008;
   position: relative;
   z-index: 3;
 }
@@ -201,23 +521,23 @@ button {
 }
 
 .trump-info strong {
-  color: #00d9ff;
+  color: #e8bd88;
   font-size: 32px;
 }
 
 .turn-info {
-  color: #00d9ff;
+  color: #e8bd88;
   margin-top: 15px;
   font-weight: bold;
 }
 
 #game-status {
-  color: #00d9ff;
+  color: #e8bd88;
   margin-top: 12px;
   font-size: 14px;
 }
 
-/* КАРТИ НА СТОЛІ */
+/* Карти на столі */
 
 .played-cards {
   display: flex;
@@ -246,7 +566,7 @@ button {
   color: #e32645;
 }
 
-/* ПОЯВА КАРТ */
+/* Анімація карт */
 
 .newly-played {
   animation: cardAppear 0.55s cubic-bezier(.2, .8, .3, 1) both;
@@ -312,7 +632,7 @@ button {
   }
 }
 
-/* КАРТИ ГРАВЦЯ */
+/* Карти гравця */
 
 .my-hand {
   position: absolute;
@@ -365,10 +685,10 @@ button {
 
 .card:not(:disabled):hover {
   transform: translateY(-12px);
-  border-color: #00d9ff;
+  border-color: #e5b477;
 }
 
-/* КОМАНДНІ СТОПКИ */
+/* Командні стопки */
 
 .team-pile {
   position: absolute;
@@ -400,15 +720,17 @@ button {
   height: 82px;
   left: 0;
   top: 0;
-  border: 2px solid #00d9ff;
+  border: 2px solid #b58a5d;
   border-radius: 8px;
+
   background:
     repeating-linear-gradient(45deg,
-      #102440,
-      #102440 5px,
-      #16446b 5px,
-      #16446b 10px);
-  box-shadow: 0 0 12px #00d9ff55;
+      #25150f,
+      #25150f 5px,
+      #583824 5px,
+      #583824 10px);
+
+  box-shadow: 0 0 12px #0008;
 }
 
 .card-back::after {
@@ -418,10 +740,11 @@ button {
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #00d9ff;
+  color: #e5b477;
   font-size: 12px;
   font-weight: bold;
   letter-spacing: 2px;
+  text-shadow: 0 2px 3px #000;
 }
 
 .card-back.second {
@@ -436,19 +759,7 @@ button {
   top: -3px;
 }
 
-.pile-label {
-  color: #9bb5ce;
-  font-size: 10px;
-  font-weight: bold;
-}
-
-.pile-score {
-  color: #00d9ff;
-  font-size: 14px;
-  margin-top: 5px;
-}
-
-/* ПОЛІТ КАРТ У СТОПКУ */
+/* Політ карт у стопку */
 
 .collecting-team-0 {
   animation: flyLeft .85s ease-in forwards !important;
@@ -482,9 +793,547 @@ button {
   }
 }
 
-/* МОБІЛЬНА ВЕРСІЯ */
+/* ==========================================
+   ОНЛАЙН-ГРА GILA
+========================================== */
+
+.online-game {
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 10px 0 25px;
+  overflow-x: hidden;
+  position: relative;
+  isolation: isolate;
+
+  background:
+    radial-gradient(ellipse at 50% 35%, rgba(163, 103, 59, .2), transparent 65%),
+    radial-gradient(ellipse at center, transparent 25%, rgba(0, 0, 0, .8) 100%),
+    linear-gradient(135deg, #321e13, #120a06 50%, #2b190f);
+}
+
+.online-game::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg,
+      transparent 0px,
+      rgba(0, 0, 0, .13) 3px,
+      transparent 7px,
+      rgba(150, 95, 55, .07) 12px),
+    radial-gradient(ellipse at 50% 15%, rgba(183, 111, 57, .12), transparent 60%);
+}
+
+/* Ігровий стіл — ТВОЄ ФОТО З PUBLIC */
+
+.online-game .online-table {
+  position: relative;
+  width: min(99vw, 1200px) !important;
+  height: 750px !important;
+  min-height: 750px !important;
+  margin: 15px auto !important;
+  overflow: visible !important;
+
+  border: 9px solid #68432d !important;
+  border-radius: 45% !important;
+
+  background:
+    linear-gradient(rgba(20, 9, 4, .08), rgba(20, 9, 4, .18)),
+    url('/gila-wood-table.jpg') center center / 100% 100% no-repeat !important;
+
+  box-shadow:
+    inset 0 0 35px #0008,
+    inset 0 0 15px #c18a5544,
+    0 0 0 4px #24150e,
+    0 12px 35px #000c !important;
+}
+
+/* Гравці */
+
+.online-game .online-player {
+  position: absolute;
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 105px;
+  padding: 11px 15px !important;
+
+  border: 3px solid #79553c !important;
+  border-radius: 13px !important;
+
+  background: linear-gradient(145deg, #533725, #21130c 75%) !important;
+  color: #f0dfc8 !important;
+
+  font-family: Georgia, serif;
+  font-size: 13px;
+  white-space: nowrap;
+
+  box-shadow:
+    0 5px 15px #000c,
+    inset 0 0 0 2px #26160e,
+    inset 0 0 12px #0008 !important;
+}
+
+.online-game .online-player.bottom {
+  left: 50%;
+  bottom: 12px;
+  top: auto;
+  right: auto;
+  transform: translateX(-50%);
+}
+
+.online-game .online-player.top {
+  left: 50%;
+  top: 12px;
+  bottom: auto;
+  right: auto;
+  transform: translateX(-50%);
+}
+
+.online-game .online-player.left {
+  left: 15px;
+  top: 50%;
+  right: auto;
+  bottom: auto;
+  transform: translateY(-50%);
+}
+
+.online-game .online-player.right {
+  right: 15px;
+  top: 50%;
+  left: auto;
+  bottom: auto;
+  transform: translateY(-50%);
+}
+
+/* Активний гравець */
+
+.online-game .online-player.active-player {
+  border: 3px solid #e5b477 !important;
+  background: linear-gradient(145deg, #795032, #382318) !important;
+
+  box-shadow:
+    0 0 12px #dca56c,
+    0 0 28px #dca56c66,
+    inset 0 0 12px #0008 !important;
+
+  animation: pubPlayerGlow 1.7s ease-in-out infinite alternate;
+}
+
+@keyframes pubPlayerGlow {
+  from {
+    box-shadow: 0 0 8px #dca56c66, inset 0 0 12px #0008;
+  }
+
+  to {
+    box-shadow: 0 0 22px #e6b77d, 0 0 35px #dca56c66;
+  }
+}
+
+/* Сорочки карт суперників */
+
+.online-game .online-card-back {
+  width: 35px;
+  height: 52px;
+  border: 3px solid #b58a5d !important;
+  border-radius: 7px !important;
+
+  background:
+    repeating-linear-gradient(45deg,
+      #25150f,
+      #25150f 4px,
+      #583824 4px,
+      #583824 8px) !important;
+
+  box-shadow:
+    inset 0 0 0 2px #1c100b,
+    inset 0 0 0 4px #a7794e,
+    0 3px 8px #000a !important;
+}
+
+/* Центр столу */
+
+.online-game .online-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  height: 100%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Карти на столі */
+
+.online-game .online-played-card {
+  position: absolute;
+  z-index: 10;
+  width: 58px;
+  min-height: 78px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 8px !important;
+
+  border: 2px solid #b99a70 !important;
+  border-radius: 9px !important;
+
+  background: linear-gradient(135deg, #fffdf5, #eee4d1 75%, #d8c8ad) !important;
+  color: #17212b !important;
+  font-size: 21px !important;
+  font-weight: 800;
+  font-family: Georgia, serif;
+
+  box-shadow:
+    0 6px 16px #000a,
+    inset 0 0 0 2px white,
+    inset 0 0 0 4px #d2c0a2 !important;
+
+  animation: onlineCardAppear .3s ease both;
+}
+
+.online-game .online-played-card.red {
+  color: #b5222d !important;
+}
+
+.online-game .online-played-card.bottom {
+  left: 50% !important;
+  top: 62% !important;
+}
+
+.online-game .online-played-card.top {
+  left: 50% !important;
+  top: 38% !important;
+}
+
+.online-game .online-played-card.left {
+  left: 43% !important;
+  top: 50% !important;
+}
+
+.online-game .online-played-card.right {
+  left: 57% !important;
+  top: 50% !important;
+}
+
+@keyframes onlineCardAppear {
+  from {
+    opacity: 0;
+    scale: .6;
+  }
+
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+/* Стопки взяток */
+
+.online-game .online-pile {
+  position: absolute !important;
+  top: auto !important;
+  bottom: 35px !important;
+  z-index: 12 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  width: 115px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.online-game .online-pile-left {
+  left: 80px !important;
+  right: auto !important;
+}
+
+.online-game .online-pile-right {
+  right: 80px !important;
+  left: auto !important;
+}
+
+.online-game .online-pile>div {
+  width: 110px !important;
+  min-height: 145px;
+  padding: 10px !important;
+  border: 3px solid #795238 !important;
+  border-radius: 12px !important;
+  background: linear-gradient(145deg, #493022, #1b100b) !important;
+  color: #ead5b9 !important;
+
+  box-shadow:
+    0 5px 15px #000b,
+    inset 0 0 0 2px #24150e,
+    inset 0 0 10px #0008 !important;
+
+  overflow: visible !important;
+}
+
+.online-game .online-pile .card-back {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.online-game .online-pile>div>div {
+  border-color: #b58a5d !important;
+  box-shadow: 0 3px 8px #000a !important;
+}
+
+/* Підписи стопок */
+
+.online-game .online-pile .pile-label,
+.online-game .online-pile .pile-score {
+  display: block !important;
+  visibility: visible !important;
+  color: #e8bd88 !important;
+  font-family: Georgia, serif;
+}
+
+.online-game .online-pile .pile-label {
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.online-game .online-pile .pile-score {
+  margin-top: 5px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* Мої карти */
+
+.online-game .my-hand {
+  position: relative;
+  left: auto;
+  bottom: auto;
+  width: 100%;
+  margin: 20px auto 0 !important;
+  padding: 0 5px;
+  z-index: 20;
+  text-align: center;
+}
+
+.online-game .my-hand h3 {
+  margin: 10px 0;
+  color: #e8bd88 !important;
+  font-size: 14px;
+  text-shadow: 0 0 10px #bd784655;
+}
+
+.online-game .my-hand .cards {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 7px !important;
+  width: 100%;
+  padding: 10px 5px !important;
+}
+
+/* Лицьова сторона карт */
+
+.online-game .my-hand .card {
+  position: relative;
+  flex-shrink: 0;
+  width: 48px;
+  height: 75px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  padding: 5px 6px;
+
+  border: 2px solid #c6b18e !important;
+  border-radius: 9px !important;
+
+  background: linear-gradient(135deg, #fffdf5, #f2eadb 65%, #dfd2bc) !important;
+
+  color: #282018 !important;
+  font-size: 19px;
+  font-weight: 800;
+  font-family: Georgia, serif;
+
+  box-shadow:
+    0 4px 8px #0009,
+    inset 0 0 0 2px white,
+    inset 0 0 0 4px #d4c4a8 !important;
+
+  cursor: pointer;
+  overflow: hidden;
+
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.online-game .my-hand .card span:first-child {
+  font-size: 17px;
+  line-height: 1;
+  font-weight: 900;
+}
+
+.online-game .my-hand .card span:last-child {
+  align-self: flex-end;
+  font-size: 23px;
+  line-height: 1;
+  font-weight: 900;
+}
+
+.online-game .my-hand .card.red,
+.online-game .online-played-card.red {
+  color: #b5222d !important;
+}
+
+.online-game .my-hand .card::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px solid #ffffff90;
+  border-radius: 5px;
+  pointer-events: none;
+}
+
+.online-game .my-hand .card:not(:disabled):hover {
+  transform: translateY(-12px);
+  box-shadow:
+    0 10px 18px #000b,
+    0 0 15px #e5b47788,
+    inset 0 0 0 2px white !important;
+}
+
+.online-game .my-hand .card:disabled {
+  opacity: .75;
+  cursor: default;
+}
+
+/* Підсвітка дозволених карт */
+
+.online-game .my-hand .card.suit-highlight {
+  opacity: 1 !important;
+  border: 3px solid #e5b477 !important;
+
+  box-shadow:
+    0 0 8px #e5b477,
+    0 0 18px #d69a5c99,
+    inset 0 0 8px #e5b47733 !important;
+
+  transform: translateY(-8px);
+  animation: cardSuitGlow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes cardSuitGlow {
+  from {
+    box-shadow: 0 0 5px #d69a5c, 0 0 10px rgba(214, 154, 92, .4);
+  }
+
+  to {
+    box-shadow: 0 0 8px #e5b477, 0 0 20px rgba(214, 154, 92, .8);
+  }
+}
+
+.online-game .my-hand .card.suit-highlight:disabled {
+  opacity: 1 !important;
+}
+
+/* Службові елементи */
+
+.online-game .online-round,
+.online-game .online-deal-tricks,
+.online-game .online-caller {
+  text-align: center;
+  color: #ddc3a3 !important;
+  font-family: Georgia, serif;
+  margin: 5px auto;
+}
+
+.online-game .online-trump {
+  color: #e8bd88 !important;
+  font-weight: bold;
+  text-align: center;
+}
+
+.online-game .online-status {
+  color: #e8bd88 !important;
+  font-weight: bold;
+  text-align: center;
+  text-shadow: 0 0 10px #bd784655;
+  margin: 8px auto;
+}
+
+/* Рахунок онлайн-гри */
+
+.online-game .scoreboard {
+  color: #f0d3ad !important;
+  font-family: Georgia, serif;
+  font-weight: bold;
+}
+
+/* ==========================================
+   МОБІЛЬНА ВЕРСІЯ
+========================================== */
 
 @media (max-width: 600px) {
+
+  .menu-pub {
+    padding: 35px 10px 25px;
+  }
+
+  .menu-decoration {
+    top: 5px;
+    width: 125px;
+    height: 95px;
+  }
+
+  .menu-pub .profile-bar {
+    margin-top: 100px;
+    margin-bottom: 25px;
+    min-height: 65px;
+  }
+
+  .profile-avatar {
+    width: 55px;
+    height: 55px;
+  }
+
+  .menu-sign {
+    padding: 15px 8px;
+    border-width: 5px;
+  }
+
+  .menu-actions {
+    margin-top: 25px;
+    gap: 16px;
+  }
+
+  .menu-pub .pub-button {
+    min-height: 65px;
+  }
+
+  .menu-pub .join-panel {
+    margin-top: 25px;
+    padding: 14px;
+  }
+
+  .menu-pub .join-panel input {
+    height: 55px;
+    font-size: 16px;
+  }
+
+  .menu-pub .version {
+    margin-top: 25px;
+    font-size: 15px;
+  }
+
+  /* Звичайна гра */
+
   .game-header {
     padding: 8px 15px;
   }
@@ -542,834 +1391,508 @@ button {
   .suit-buttons {
     gap: 10px;
   }
-}
-/* ==================================
-   ОНЛАЙН-ГРА — ОНОВЛЕНИЙ ДИЗАЙН
-================================== */
 
-/* Ігровий стіл */
-.online-table {
-  position: relative;
-  width: 100%;
-  min-height: 80vh;
-  overflow: hidden;
-  border-radius: 25px;
-  background:
-    radial-gradient(ellipse at center, #176052 0%, #10453d 45%, #082b2b 100%);
-  border: 2px solid #00d9ff33;
-  box-shadow:
-    inset 0 0 60px #0008,
-    0 0 30px #00d9ff15;
-}
+  /* Онлайн-гра */
 
-/* Гравці */
-.online-player {
-  position: absolute;
-  z-index: 4;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 7px;
-  padding: 10px 16px;
-  min-width: 95px;
-  border: 1px solid #ffffff20;
-  border-radius: 14px;
-  background: #08182bd9;
-  color: #d7eaff;
-  transition: all .3s ease;
-}
-
-/* Активний гравець */
-.online-player.active,
-.online-player.current-turn {
-  border-color: #00d9ff;
-  box-shadow:
-    0 0 10px #00d9ff,
-    0 0 25px #00d9ff55;
-  background: #06334aee;
-  transform: scale(1.06);
-}
-
-.online-player.active::after,
-.online-player.current-turn::after {
-  content: "ХІД";
-  color: #00d9ff;
-  font-size: 10px;
-  font-weight: bold;
-  letter-spacing: 2px;
-}
-
-/* Кількість карт */
-.online-player .cards-count {
-  color: #00d9ff;
-  font-size: 12px;
-}
-
-/* Сорочки карт суперників */
-.online-card-back {
-  width: 35px;
-  height: 52px;
-  border: 2px solid #00d9ff;
-  border-radius: 6px;
-  background:
-    repeating-linear-gradient(45deg,
-      #102440,
-      #102440 4px,
-      #16446b 4px,
-      #16446b 8px);
-  box-shadow: 0 3px 8px #0008;
-}
-
-/* Центр столу */
-.online-center {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 100%;
-  height: 100%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-}
-
-/* Карти на столі */
-.online-trick-card {
-  position: absolute;
-  width: 55px;
-  height: 78px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 2px solid #ddd;
-  border-radius: 9px;
-  background: linear-gradient(145deg, #fff, #e7e7e7);
-  color: #111;
-  font-size: 21px;
-  font-weight: bold;
-  box-shadow: 0 5px 15px #0009;
-  animation: onlineCardAppear .4s ease both;
-}
-
-.online-trick-card.red {
-  color: #e32645;
-}
-
-/* Анімація появи */
-@keyframes onlineCardAppear {
-  from {
-    opacity: 0;
-    scale: .5;
+  .online-game {
+    padding: 2px 0 8px;
+    margin: 0;
+    overflow-x: hidden;
   }
 
-  to {
-    opacity: 1;
-    scale: 1;
-  }
-}
-
-/* Рука гравця */
-.online-hand {
-  position: absolute;
-  bottom: 5px;
-  left: 0;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  z-index: 10;
-  padding: 10px;
-}
-
-/* Карти в руці */
-.online-hand .card {
-  transition:
-    transform .2s ease,
-    box-shadow .2s ease;
-}
-
-.online-hand .card:not(:disabled):hover {
-  transform: translateY(-18px) scale(1.08);
-  box-shadow: 0 0 15px #00d9ff88;
-}
-
-/* Повідомлення про хід */
-.online-status {
-  color: #00d9ff;
-  font-weight: bold;
-  text-shadow: 0 0 10px #00d9ff66;
-}
-
-/* Адаптація для телефонів */
-@media (max-width: 600px) {
-  .online-player {
-    min-width: 65px;
-    padding: 6px 9px;
-    font-size: 11px;
+  .online-game .game-header {
+    padding: 4px 10px;
   }
 
-  .online-card-back {
+  .online-game .game-header h1 {
+    font-size: 21px;
+    letter-spacing: 3px;
+    margin: 5px 0;
+  }
+
+  .online-game .game-header button {
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+
+  .online-game .online-round,
+  .online-game .online-deal-tricks,
+  .online-game .online-caller,
+  .online-game .online-trump {
+    margin: 3px auto;
+    font-size: 12px;
+    line-height: 1.2;
+  }
+
+  .online-game .scoreboard {
+    gap: 20px !important;
+    margin: 4px auto !important;
+    padding: 3px !important;
+    font-size: 16px;
+  }
+
+  /* Стіл */
+
+  .online-game .online-table {
+    width: 98vw !important;
+    height: 300px !important;
+    min-height: 300px !important;
+    margin: 5px auto !important;
+    border-radius: 35% !important;
+    border-width: 5px !important;
+    background-size: 100% 100% !important;
+  }
+
+  /* Гравці */
+
+  .online-game .online-player {
+    min-width: 65px !important;
+    padding: 6px 7px !important;
+    font-size: 10px !important;
+  }
+
+  .online-game .online-player.top {
+    top: 7px;
+  }
+
+  .online-game .online-player.bottom {
+    bottom: 7px;
+  }
+
+  .online-game .online-player.left {
+    left: 3px;
+  }
+
+  .online-game .online-player.right {
+    right: 3px;
+  }
+
+  /* Карти суперників */
+
+  .online-game .online-card-back {
     width: 25px;
     height: 38px;
   }
 
-  .online-trick-card {
-    width: 43px;
-    height: 62px;
-    font-size: 17px;
-  }
-
-  .online-hand {
-    padding: 4px;
-  }
-}
-/* =====================================
-   ВИПРАВЛЕННЯ РОЗТАШУВАННЯ ОНЛАЙН-СТОЛУ
-===================================== */
-
-.online-game {
-  min-height: 100vh;
-  overflow-x: hidden;
-  padding-bottom: 20px;
-}
-
-/* Ігровий стіл */
-.online-game .online-table {
-  width: min(94vw, 700px);
-  height: clamp(280px, 52vh, 400px) !important;
-  min-height: 280px;
-  margin: 15px auto;
-  overflow: hidden;
-}
-
-/* Загальне оформлення гравців */
-.online-game .online-player {
-  position: absolute;
-  z-index: 4;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-width: 90px;
-  padding: 9px 12px !important;
-  white-space: nowrap;
-  transition: box-shadow .25s ease, background .25s ease;
-}
-
-/* Гравець знизу */
-.online-game .online-player.bottom {
-  left: 50%;
-  bottom: 10px;
-  top: auto;
-  right: auto;
-  transform: translateX(-50%);
-}
-
-/* Гравець зверху */
-.online-game .online-player.top {
-  left: 50%;
-  top: 10px;
-  bottom: auto;
-  right: auto;
-  transform: translateX(-50%);
-}
-
-/* Гравець зліва */
-.online-game .online-player.left {
-  left: 10px;
-  top: 50%;
-  right: auto;
-  bottom: auto;
-  transform: translateY(-50%);
-}
-
-/* Гравець справа */
-.online-game .online-player.right {
-  right: 10px;
-  top: 50%;
-  left: auto;
-  bottom: auto;
-  transform: translateY(-50%);
-}
-
-/* Підсвічування активного гравця */
-.online-game .online-player.active-player {
-  background: #06445a !important;
-  border-color: #00d9ff !important;
-  box-shadow: 0 0 18px #00d9ff88;
-}
-
-.online-game .online-player.bottom.active-player {
-  transform: translateX(-50%) scale(1.05);
-}
-
-.online-game .online-player.top.active-player {
-  transform: translateX(-50%) scale(1.05);
-}
-
-.online-game .online-player.left.active-player {
-  transform: translateY(-50%) scale(1.05);
-}
-
-.online-game .online-player.right.active-player {
-  transform: translateY(-50%) scale(1.05);
-}
-
-/* Карти, які виклали гравці */
-.online-game .online-played-card {
-  z-index: 3;
-  width: 58px;
-  min-height: 78px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  animation: onlineCardAppear .35s ease both;
-}
-
-/* Карта гравця знизу */
-.online-game .online-played-card.bottom {
-  left: 50% !important;
-  top: 72% !important;
-}
-
-/* Карта гравця зверху */
-.online-game .online-played-card.top {
-  left: 50% !important;
-  top: 28% !important;
-}
-
-/* Карта гравця зліва */
-.online-game .online-played-card.left {
-  left: 30% !important;
-  top: 50% !important;
-}
-
-/* Карта гравця справа */
-.online-game .online-played-card.right {
-  left: 70% !important;
-  top: 50% !important;
-}
-
-/* Власні карти */
-.online-game .my-hand {
-  position: relative;
-  left: auto;
-  bottom: auto;
-  width: 100%;
-  margin: 15px auto 0;
-  padding: 0 5px;
-  z-index: 5;
-}
-
-.online-game .my-hand h3 {
-  text-align: center;
-  color: #00d9ff;
-}
-
-.online-game .my-hand .cards {
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  flex-wrap: wrap;
-  gap: 7px;
-  width: 100%;
-  padding: 10px;
-}
-
-/* Анімація карт */
-.online-game .my-hand .card {
-  flex-shrink: 0;
-  transition: transform .2s ease, box-shadow .2s ease;
-}
-
-.online-game .my-hand .card:not(:disabled):hover {
-  transform: translateY(-12px);
-  box-shadow: 0 0 15px #00d9ff88;
-}
-
-/* Телефони */
-@media (max-width: 600px) {
-  .online-game .online-table {
-    width: 96vw;
-    height: 340px !important;
-    min-height: 340px;
-    border-radius: 35%;
-  }
-
-  .online-game .online-player {
-    min-width: 65px;
-    padding: 7px 8px !important;
-    font-size: 11px;
-  }
-
-  .online-game .online-player.left {
-    left: 4px;
-  }
-
-  .online-game .online-player.right {
-    right: 4px;
-  }
+  /* Карти на столі */
 
   .online-game .online-played-card {
-    width: 43px;
-    min-height: 62px;
-    padding: 7px !important;
-    font-size: 16px !important;
+    width: 38px;
+    min-width: 38px;
+    min-height: 55px;
+    padding: 4px !important;
+    font-size: 15px !important;
+  }
+
+  .online-game .online-played-card.bottom {
+    top: 62% !important;
+  }
+
+  .online-game .online-played-card.top {
+    top: 38% !important;
   }
 
   .online-game .online-played-card.left {
-    left: 29% !important;
+    left: 42% !important;
   }
 
   .online-game .online-played-card.right {
-    left: 71% !important;
+    left: 58% !important;
   }
 
-  .online-game .my-hand .cards {
-    gap: 4px;
-    padding: 8px 2px;
+  /* Стопки */
+
+  .online-game .online-pile {
+    bottom: 10px !important;
+    width: 75px;
+    transform: scale(.65);
+    transform-origin: bottom center;
   }
 
-  .online-game .my-hand .card {
-    width: 35px;
-    height: 58px;
-    padding: 5px;
-    font-size: 15px;
-  }
-}
-/* Карти майже в центрі столу */
-.online-game .online-played-card.bottom {
-  left: 50% !important;
-  top: 57% !important;
-}
-
-.online-game .online-played-card.top {
-  left: 50% !important;
-  top: 43% !important;
-}
-
-.online-game .online-played-card.left {
-  left: 43% !important;
-  top: 50% !important;
-}
-
-.online-game .online-played-card.right {
-  left: 57% !important;
-  top: 50% !important;
-}
-/* Трохи збільшуємо ігровий стіл */
-.online-game .online-table {
-  width: min(96vw, 780px) !important;
-  height: 430px !important;
-  min-height: 430px !important;
-}
-
-/* Опускаємо власні карти нижче */
-.online-game .my-hand {
-  margin-top: 30px !important;
-  transform: translateY(15px);
-}
-
-/* Трохи більше місця для карт на телефоні */
-@media (max-width: 600px) {
-  .online-game .online-table {
-    width: 97vw !important;
-    height: 370px !important;
-    min-height: 370px !important;
-  }
-
-  .online-game .my-hand {
-    margin-top: 25px !important;
-    transform: translateY(10px);
-  }
-}
-/* Ще більший ігровий стіл */
-.online-game .online-table {
-  width: min(98vw, 900px) !important;
-  height: 520px !important;
-  min-height: 520px !important;
-}
-
-@media (max-width: 600px) {
-  .online-game .online-table {
-    width: 98vw !important;
-    height: 430px !important;
-    min-height: 430px !important;
-  }
-}
-/* Плавна анімація розіграшу карт */
-.online-game .online-played-card {
-  animation-duration: 0.4s !important;
-  animation-fill-mode: both;
-  animation-timing-function: cubic-bezier(.2, .8, .3, 1);
-}
-
-/* Карта нижнього гравця */
-.online-game .online-played-card.bottom {
-  animation-name: cardFromBottom !important;
-}
-
-/* Карта верхнього гравця */
-.online-game .online-played-card.top {
-  animation-name: cardFromTop !important;
-}
-
-/* Карта лівого гравця */
-.online-game .online-played-card.left {
-  animation-name: cardFromLeft !important;
-}
-
-/* Карта правого гравця */
-.online-game .online-played-card.right {
-  animation-name: cardFromRight !important;
-}
-
-@keyframes cardFromBottom {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -50%) translateY(45px) scale(.65);
-  }
-
-  to {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
-}
-
-@keyframes cardFromTop {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -50%) translateY(-45px) scale(.65);
-  }
-
-  to {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
-}
-
-@keyframes cardFromLeft {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -50%) translateX(-45px) scale(.65);
-  }
-
-  to {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
-}
-
-@keyframes cardFromRight {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -50%) translateX(45px) scale(.65);
-  }
-
-  to {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
-}
-/* Дизайн карт на ігровому столі */
-.online-game .online-played-card {
-  background: linear-gradient(145deg, #ffffff, #e8edf3) !important;
-  color: #17212b !important;
-  border: 2px solid #ffffff !important;
-  border-radius: 9px !important;
-  box-shadow: 0 5px 15px #0008, 0 0 8px #00d9ff44;
-  font-weight: 800;
-}
-
-/* Дизайн карт у руці */
-.online-game .my-hand .card {
-  background: linear-gradient(145deg, #ffffff, #e8edf3);
-  color: #17212b;
-  border: 2px solid #ffffff;
-  border-radius: 9px;
-  box-shadow: 0 4px 10px #0006;
-  cursor: pointer;
-}
-
-/* Ефект наведення */
-.online-game .my-hand .card:not(:disabled):hover {
-  transform: translateY(-12px) scale(1.05);
-  box-shadow: 0 0 16px #00d9ff99;
-}
-/* Анімація активного гравця */
-.online-game .online-player.active-player {
-  border: 2px solid #00d9ff !important;
-  box-shadow:
-    0 0 10px #00d9ff,
-    0 0 25px #00d9ff88;
-  animation: playerTurnPulse 1.5s infinite alternate;
-}
-
-@keyframes playerTurnPulse {
-  from {
-    box-shadow: 0 0 8px #00d9ff66;
-  }
-
-  to {
-    box-shadow: 0 0 22px #00d9ff;
-  }
-}
-/* ВИДИМІ СТОПКИ ВЗЯТОК */
-
-.online-game .online-pile {
-  position: absolute;
-  bottom: 18px;
-  z-index: 8;
-  display: block;
-  visibility: visible;
-  opacity: 1;
-}
-
-.online-game .online-pile-left {
-  left: 12px;
-}
-
-.online-game .online-pile-right {
-  right: 12px;
-}
-
-.online-game .online-pile>div {
-  border: 2px solid #20d9ed !important;
-  background: rgba(3, 17, 29, .96) !important;
-  box-shadow: 0 0 18px rgba(32, 217, 237, .35) !important;
-}
-
-.online-game .online-pile .card-back {
-  display: block;
-  visibility: visible;
-  opacity: 1;
-}
-
-@media (max-width: 600px) {
   .online-game .online-pile-left {
-    left: 3px;
+    left: 5px !important;
+    right: auto !important;
   }
 
   .online-game .online-pile-right {
-    right: 3px;
+    right: 5px !important;
+    left: auto !important;
   }
 
   .online-game .online-pile>div {
     width: 88px !important;
-    padding: 5px 2px !important;
+    min-height: 115px;
+    padding: 5px 3px !important;
+  }
+
+  .online-game .online-pile .pile-label {
+    font-size: 9px;
+  }
+
+  .online-game .online-pile .pile-score {
+    font-size: 13px;
+  }
+
+  /* Статус */
+
+  .online-game .online-status {
+    margin: 4px auto;
+    font-size: 12px;
+    padding: 0 5px;
+  }
+
+  /* Мої карти */
+
+  .online-game .my-hand {
+    position: relative;
+    margin: 3px auto 0 !important;
+    padding: 0;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .online-game .my-hand h3 {
+    margin: 3px 0 !important;
+    font-size: 12px;
+  }
+
+  .online-game .my-hand .cards {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    justify-content: flex-start !important;
+    align-items: flex-end;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    width: 100%;
+    gap: 5px !important;
+    padding: 5px 10px 10px !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  .online-game .my-hand .card {
+    flex: 0 0 38px !important;
+    width: 38px !important;
+    min-width: 38px !important;
+    height: 58px !important;
+    padding: 4px 5px;
+    font-size: 14px;
+  }
+
+  .online-game .my-hand .card span:first-child {
+    font-size: 14px;
+  }
+
+  .online-game .my-hand .card span:last-child {
+    font-size: 19px;
+  }
+
+  .online-game .my-hand .card:not(:disabled):hover {
+    transform: none;
   }
 }
-/* ВИПРАВЛЕННЯ ВІДОБРАЖЕННЯ ВЗЯТОК */
 
-.online-game .team-pile {
-  position: absolute !important;
-  top: auto !important;
-  bottom: 18px !important;
-  z-index: 8 !important;
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  width: 110px;
+/* Дуже вузькі телефони */
+
+@media (max-width: 360px) {
+
+  .online-game .scoreboard {
+    gap: 12px !important;
+    font-size: 14px;
+  }
+
+  .online-game .online-player {
+    min-width: 58px !important;
+    font-size: 9px !important;
+    padding: 4px 5px !important;
+  }
+
+  .online-game .online-pile {
+    transform: scale(.58);
+  }
+
+  .online-game .online-pile-left {
+    left: 0 !important;
+  }
+
+  .online-game .online-pile-right {
+    right: 0 !important;
+  }
+
+  .online-game .my-hand .cards {
+    gap: 4px !important;
+  }
+
+  .online-game .my-hand .card {
+    flex-basis: 35px !important;
+    width: 35px !important;
+    min-width: 35px !important;
+    height: 54px !important;
+    font-size: 13px;
+  }
+
+  .online-game .my-hand .card span:first-child {
+    font-size: 13px;
+  }
+
+  .online-game .my-hand .card span:last-child {
+    font-size: 17px;
+  }
+}
+
+/* Зменшення анімацій за налаштуваннями пристрою */
+
+@media (prefers-reduced-motion: reduce) {
+  .online-game .my-hand .card.suit-highlight {
+    animation: none;
+  }
+}
+
+/* ==========================================
+   ОНЛАЙН-КІМНАТА — ДИЗАЙН СТАРОВИННОГО PUB
+========================================== */
+
+.menu:not(.menu-pub) {
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 45px 15px 35px;
+  overflow: hidden;
   text-align: center;
-  pointer-events: none;
+  color: #ead8c0;
+
+  background:
+    radial-gradient(ellipse at center, transparent 20%, #000b 100%),
+    repeating-linear-gradient(90deg,
+      transparent 0,
+      rgba(0, 0, 0, .15) 4px,
+      transparent 8px),
+    linear-gradient(135deg, #302018, #100a07 45%, #29180f);
 }
 
-.online-game .team-pile.left-pile {
-  left: 12px !important;
-  right: auto !important;
+.menu:not(.menu-pub) h1 {
+  margin: 15px 0;
+  color: #e8bd88;
+  font-family: Georgia, serif;
+  font-size: clamp(55px, 13vw, 85px);
+  letter-spacing: 5px;
+  text-shadow: 0 4px 8px #000;
 }
 
-.online-game .team-pile.right-pile {
-  right: 12px !important;
-  left: auto !important;
+/* Кнопки кімнати */
+
+.menu:not(.menu-pub) button {
+  position: relative;
+  min-height: 55px;
+  padding: 12px 22px;
+
+  border: 3px solid #b47b51;
+  border-radius: 13px;
+
+  background: linear-gradient(180deg,
+      #603a27,
+      #28150e 50%,
+      #48291b);
+
+  color: #e8d5bd;
+  font-family: Georgia, serif;
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 3px #000;
+
+  box-shadow:
+    0 6px 12px #000a,
+    inset 0 0 0 3px #29150e,
+    inset 0 0 0 5px #a46d48;
+
+  cursor: pointer;
+  transition: .2s ease;
 }
 
-.online-game .team-pile .pile-cards {
-  display: block !important;
-  visibility: visible !important;
+.menu:not(.menu-pub) button:hover {
+  filter: brightness(1.3);
+  transform: translateY(-2px);
 }
 
-.online-game .team-pile .card-back {
-  display: block !important;
-  opacity: 1 !important;
-  visibility: visible !important;
+.menu:not(.menu-pub) button:active {
+  transform: translateY(2px);
 }
 
-.online-game .team-pile .pile-label,
-.online-game .team-pile .pile-score {
-  color: #00d9ff !important;
-  display: block !important;
-  visibility: visible !important;
+/* Кнопка копіювання */
+
+.menu:not(.menu-pub) #copy-room-code {
+  margin-top: 12px;
 }
 
-@media (max-width: 600px) {
-  .online-game .team-pile {
-    bottom: 10px !important;
-    width: 85px;
-  }
+/* Кнопка початку гри */
 
-  .online-game .team-pile.left-pile {
-    left: 3px !important;
-  }
-
-  .online-game .team-pile.right-pile {
-    right: 3px !important;
-  }
-}
-/* ЗБІЛЬШЕНІ СТОПКИ ВЗЯТОК */
-
-.online-game .team-pile {
-  bottom: 35px !important;
-  width: 120px !important;
-  z-index: 20 !important;
+.menu:not(.menu-pub) #start-online-game {
+  width: min(90%, 350px);
+  margin: 20px auto;
+  min-height: 70px;
+  font-size: 20px;
 }
 
-.online-game .team-pile .pile-cards {
-  transform: scale(1.15);
-  margin-bottom: 15px;
+/* Версія */
+
+.menu:not(.menu-pub) .version {
+  margin-top: 30px;
+  color: #c6ad93;
+  font-family: Georgia, serif;
 }
 
-.online-game .team-pile .card-back {
-  width: 65px;
-  height: 90px;
+/* ==========================================
+   GILA — PREMIUM OLD PUB TABLE
+========================================== */
+
+/* Атмосфера приміщення */
+.online-game {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(219, 151, 77, .18), transparent 45%),
+    radial-gradient(ellipse at center, transparent 35%, rgba(0, 0, 0, .85) 100%),
+    linear-gradient(135deg, #24150d, #0c0806 55%, #2b190f) !important;
+  color: #f1dfc1;
+  font-family: Georgia, serif;
 }
 
-.online-game .team-pile .pile-label {
-  font-size: 12px !important;
-}
-
-.online-game .team-pile .pile-score {
-  font-size: 16px !important;
-}
-
-@media (max-width: 600px) {
-  .online-game .team-pile {
-    bottom: 20px !important;
-    width: 90px !important;
-  }
-
-  .online-game .team-pile .pile-cards {
-    transform: scale(.85);
-    margin-bottom: 5px;
-  }
-}
-/* ЗБІЛЬШЕННЯ ІГРОВОГО СТОЛУ */
-
+/* Зовнішня рамка столу */
 .online-game .online-table {
-  width: min(98vw, 1100px) !important;
-  height: 650px !important;
-  min-height: 650px !important;
+  border: 10px solid #382116 !important;
+  outline: 2px solid #b68a52;
+  outline-offset: -15px;
+
+  box-shadow:
+    0 0 0 3px #140b07,
+    0 0 0 6px #765033,
+    0 15px 45px #000,
+    inset 0 0 45px rgba(0, 0, 0, .35) !important;
 }
 
-@media (max-width: 600px) {
-  .online-game .online-table {
-    width: 98vw !important;
-    height: 480px !important;
-    min-height: 480px !important;
-  }
-}
-/* ВІДОБРАЖЕННЯ ВЗЯТОК НА ОНЛАЙН-СТОЛІ */
+/* Таблички гравців */
+.online-game .online-player {
+  border: 3px solid #bd925c !important;
+  border-radius: 10px !important;
 
-.online-game .online-table .online-pile {
-  position: absolute !important;
-  top: auto !important;
-  bottom: 20px !important;
-  z-index: 30 !important;
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
+  background:
+    linear-gradient(145deg, #68452b, #392216 55%, #21120b) !important;
 
-.online-game .online-table .online-pile-left {
-  left: 15px !important;
-  right: auto !important;
+  color: #f8e3bd !important;
+  font-family: Georgia, serif;
+  letter-spacing: .5px;
+
+  box-shadow:
+    inset 0 0 0 2px #24140c,
+    inset 0 0 0 4px #9b7047,
+    0 5px 15px #000c !important;
 }
 
-.online-game .online-table .online-pile-right {
-  right: 15px !important;
-  left: auto !important;
+/* Активний гравець */
+.online-game .online-player.active-player {
+  border-color: #f0c47e !important;
+
+  background:
+    linear-gradient(145deg, #87603a, #50301b) !important;
+
+  box-shadow:
+    0 0 12px #e7b66f,
+    0 0 28px #d69a5c88,
+    inset 0 0 0 3px #382116 !important;
 }
 
-.online-game .online-table .online-pile>div {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
+/* Сорочки карт */
+.online-game .online-card-back {
+  border: 3px solid #c49a60 !important;
+  border-radius: 6px !important;
+
+  background:
+    repeating-linear-gradient(45deg,
+      #101d2b 0px,
+      #101d2b 5px,
+      #1d3445 5px,
+      #1d3445 10px) !important;
+
+  box-shadow:
+    inset 0 0 0 2px #17202a,
+    inset 0 0 0 4px #b58a56,
+    0 4px 10px #000b !important;
 }
 
-.online-game .online-table .online-pile .card-back {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-/* ПРАВИЛЬНЕ РОЗТАШУВАННЯ СТОПОК ВЗЯТОК */
+/* Карти на столі */
+.online-game .online-played-card {
+  border: 2px solid #c5a575 !important;
+  border-radius: 8px !important;
 
-.online-game .online-table .online-pile {
-  bottom: 90px !important;
-  z-index: 30 !important;
-}
+  background:
+    linear-gradient(135deg, #fffdf5, #f0e5d1 70%, #dfc9a8) !important;
 
-.online-game .online-table .online-pile-left {
-  left: 100px !important;
+  box-shadow:
+    0 7px 18px #000b,
+    inset 0 0 0 2px white,
+    inset 0 0 0 4px #ddc9a8 !important;
 }
 
-.online-game .online-table .online-pile-right {
-  right: 100px !important;
+/* Стопки взяток */
+.online-game .online-pile>div {
+  border: 3px solid #bd925c !important;
+  border-radius: 10px !important;
+
+  background:
+    linear-gradient(145deg, #50331f, #21130c) !important;
+
+  box-shadow:
+    inset 0 0 0 2px #24140c,
+    inset 0 0 0 4px #8e633e,
+    0 8px 18px #000b !important;
 }
 
-.online-game .online-table .online-pile>div {
-  width: 110px !important;
-  min-height: 145px;
-  padding: 10px !important;
-  overflow: visible !important;
+/* Підписи та рахунок стопок */
+.online-game .online-pile .pile-label,
+.online-game .online-pile .pile-score {
+  color: #f2d19c !important;
+  font-family: Georgia, serif;
+  text-shadow: 0 2px 4px #000;
 }
 
-.online-game .online-table .online-pile .pile-cards {
-  margin: 0 auto 10px !important;
-  transform: scale(1) !important;
+/* Карти в руці */
+.online-game .my-hand .card {
+  border: 2px solid #c9aa7b !important;
+  border-radius: 8px !important;
+
+  background:
+    linear-gradient(135deg, #fffdf6, #f1e5d1 70%, #dfc9a8) !important;
+
+  box-shadow:
+    0 5px 12px #000b,
+    inset 0 0 0 2px white,
+    inset 0 0 0 4px #ddc9a8 !important;
 }
 
-.online-game .online-table {
-  overflow: visible !important;
+/* Підсвічування карт */
+.online-game .my-hand .card.suit-highlight {
+  border: 3px solid #f0c47e !important;
+  box-shadow:
+    0 0 12px #e5b477,
+    0 0 25px #d69a5c88 !important;
 }
 
-@media (max-width: 600px) {
-  .online-game .online-table .online-pile {
-    bottom: 80px !important;
-  }
-
-  .online-game .online-table .online-pile-left {
-    left: 65px !important;
-  }
-
-  .online-game .online-table .online-pile-right {
-    right: 65px !important;
-  }
-}
-/* ЗБІЛЬШЕНИЙ ІГРОВИЙ СТІЛ */
-
-.online-game .online-table {
-  width: min(99vw, 1200px) !important;
-  height: 750px !important;
-  min-height: 750px !important;
-  margin: 15px auto !important;
-  overflow: visible !important;
+/* Заголовки та рахунок */
+.online-game .game-header h1,
+.online-game .scoreboard,
+.online-game .online-round,
+.online-game .online-deal-tricks,
+.online-game .online-caller,
+.online-game .online-trump,
+.online-game .online-status {
+  color: #f0d0a0 !important;
+  font-family: Georgia, serif;
+  text-shadow: 0 2px 5px #000;
 }
 
-@media (max-width: 600px) {
-  .online-game .online-table {
-    width: 98vw !important;
-    height: 560px !important;
-    min-height: 560px !important;
-  }
-
-  .online-game .online-table .online-pile {
-    bottom: 80px !important;
-  }
-
-  .online-game .online-table .online-pile-left {
-    left: 55px !important;
-  }
-
-  .online-game .online-table .online-pile-right {
-    right: 55px !important;
-  }
+/* Теплі кнопки */
+.online-game button {
+  border: 2px solid #bd925c !important;
+  border-radius: 8px !important;
+  background: linear-gradient(145deg, #80552f, #382116) !important;
+  color: #ffedcf !important;
+  box-shadow: 0 4px 10px #0009 !important;
 }
