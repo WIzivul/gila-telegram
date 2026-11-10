@@ -1257,14 +1257,53 @@ function showOnlineGame() {
     highlightedCards.map(card => `${card.rank}${card.suit}`)
   )
 
-  // Порядок місць за годинниковою стрілкою:
-  // ти знизу → наступний гравець зліва →
-  // третій зверху → четвертий справа.
-  const positions = ['bottom', 'left', 'top', 'right']
+  // ========================================
+  // РОЗСТАНОВКА ГРАВЦІВ ЗА КОМАНДАМИ
+  // Напарники завжди навпроти!
+  // ========================================
+
+  const positionsByPlayer = Array(4).fill(null)
+
+  // Ти завжди знизу
+  positionsByPlayer[myIndex] = 'bottom'
+
+  // Знаходимо твого напарника
+  const teammateIndex = onlineGameInfo.players.findIndex(
+    (player, index) =>
+      index !== myIndex &&
+      getOnlinePlayerTeam(index) === myTeam
+  )
+
+  // Напарник завжди навпроти тебе
+  if (teammateIndex !== -1) {
+    positionsByPlayer[teammateIndex] = 'top'
+  }
+
+  // Знаходимо двох суперників
+  const opponents = onlineGameInfo.players
+    .map((player, index) => ({
+      index,
+      relativePosition: (index - myIndex + 4) % 4
+    }))
+    .filter(item =>
+      item.index !== myIndex &&
+      item.index !== teammateIndex
+    )
+    .sort((a, b) =>
+      a.relativePosition - b.relativePosition
+    )
+
+  // Суперники сидять ліворуч і праворуч
+  if (opponents[0]) {
+    positionsByPlayer[opponents[0].index] = 'left'
+  }
+
+  if (opponents[1]) {
+    positionsByPlayer[opponents[1].index] = 'right'
+  }
 
   const playerElements = onlineGameInfo.players.map((player, index) => {
-    const relativePosition = (index - myIndex + 4) % 4
-    const position = positions[relativePosition]
+    const position = positionsByPlayer[index]
 
     const playerTeam = getOnlinePlayerTeam(index)
     const isMyTeam = playerTeam === myTeam
@@ -1303,10 +1342,7 @@ function showOnlineGame() {
   }).join('')
 
   const playedCards = trick.map(item => {
-    const relativePosition =
-      (item.playerIndex - myIndex + 4) % 4
-
-    const position = positions[relativePosition]
+    const position = positionsByPlayer[item.playerIndex]
 
     return `
       <div class="online-played-card ${position} ${item.card.red || '♥♦'.includes(item.card.suit) ? 'red' : ''}"
