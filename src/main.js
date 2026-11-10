@@ -503,7 +503,6 @@ function showTable() {
 // ОНЛАЙН-ГРА
 // ========================================
 
-// Оновлення кімнати
 socket.on('room-updated', room => {
   if (room.code !== currentRoomCode) return
 
@@ -513,12 +512,10 @@ socket.on('room-updated', room => {
   showRoomLobby()
 })
 
-// Початок нової роздачі
 socket.on('game-started', info => {
   if (info.roomCode !== currentRoomCode) return
 
   onlineGameInfo = info
-
   onlineHand = []
 
   onlinePublicState = {
@@ -543,7 +540,6 @@ socket.on('game-started', info => {
   showOnlineGame()
 })
 
-// Отримання власних карт
 socket.on('private-hand', data => {
   if (data.roomCode !== currentRoomCode) return
 
@@ -552,7 +548,6 @@ socket.on('private-hand', data => {
   showOnlineGame()
 })
 
-// Вибір козиря
 socket.on('trump-chosen', data => {
   if (data.roomCode !== currentRoomCode) return
 
@@ -565,7 +560,6 @@ socket.on('trump-chosen', data => {
   showOnlineGame()
 })
 
-// Викладання карти
 socket.on('card-played', data => {
   if (data.roomCode !== currentRoomCode) return
 
@@ -575,7 +569,6 @@ socket.on('card-played', data => {
   showOnlineGame()
 })
 
-// Завершення взятки
 socket.on('trick-finished', data => {
   if (data.roomCode !== currentRoomCode) return
 
@@ -587,7 +580,6 @@ socket.on('trick-finished', data => {
   showOnlineGame()
 })
 
-// Очищення столу
 socket.on('trick-cleared', data => {
   if (data.roomCode !== currentRoomCode) return
 
@@ -601,7 +593,6 @@ socket.on('trick-cleared', data => {
   showOnlineGame()
 })
 
-// Результат роздачі
 socket.on('round-finished', data => {
   if (data.roomCode !== currentRoomCode) return
 
@@ -625,7 +616,6 @@ socket.on('round-finished', data => {
   showOnlineGame()
 })
 
-// Завершення всього матчу
 socket.on('game-finished', data => {
   if (data.roomCode && data.roomCode !== currentRoomCode) return
 
@@ -697,7 +687,6 @@ function joinOnlineRoom() {
   })
 }
 
-// Екран кімнати
 function showRoomLobby() {
   const isHost = socket.id === roomHostId
   const isFull = roomPlayers.length === 4
@@ -975,11 +964,13 @@ function showOnlineGame() {
   const myTurn =
     onlinePublicState.currentTurn === myIndex
 
+  const trick = onlinePublicState.currentTrick || []
+
   const canPlay =
     myTurn &&
     trumpChosen &&
     !onlinePublicState.gameFinished &&
-    onlinePublicState.currentTrick.length < 4 &&
+    trick.length < 4 &&
     !onlinePlayPending
 
   const sortedHand = [...onlineHand].sort((a, b) => {
@@ -997,7 +988,54 @@ function showOnlineGame() {
   const teamScores = onlinePublicState.teamScores || [0, 0]
   const dealTricks = onlinePublicState.dealTricks || [0, 0]
   const handsCount = onlinePublicState.handsCount || [9, 9, 9, 9]
-  const trick = onlinePublicState.currentTrick || []
+
+  // ========================================
+  // ПІДСВІТКА ДОЗВОЛЕНИХ КАРТ
+  // ========================================
+
+  let highlightedCards = []
+
+  if (
+    myTurn &&
+    !onlinePlayPending &&
+    onlineHand.length > 0 &&
+    trumpChosen &&
+    !onlinePublicState.gameFinished &&
+    trick.length < 4
+  ) {
+    if (trick.length === 0) {
+      highlightedCards = [...onlineHand]
+    } else {
+      const firstCard = trick[0].card
+      const currentTrump = onlineGameInfo.trumpSuit
+
+      const isOnlineTrump = card =>
+        card.rank === '7' ||
+        card.rank === 'J' ||
+        card.suit === currentTrump
+
+      if (isOnlineTrump(firstCard)) {
+        const trumps = onlineHand.filter(isOnlineTrump)
+
+        highlightedCards = trumps.length > 0
+          ? trumps
+          : [...onlineHand]
+      } else {
+        const sameSuit = onlineHand.filter(card =>
+          card.suit === firstCard.suit &&
+          !isOnlineTrump(card)
+        )
+
+        highlightedCards = sameSuit.length > 0
+          ? sameSuit
+          : [...onlineHand]
+      }
+    }
+  }
+
+  const highlightedCardKeys = new Set(
+    highlightedCards.map(card => `${card.rank}${card.suit}`)
+  )
 
   const positions = ['bottom', 'right', 'top', 'left']
 
@@ -1100,11 +1138,7 @@ function showOnlineGame() {
         </span>
       </header>
 
-      <div style="
-        text-align:center;
-        color:#9bb7c8;
-        margin:8px auto;
-      ">
+      <div class="online-round">
         РОЗДАЧА №${onlinePublicState.roundNumber || 1}
       </div>
 
@@ -1118,45 +1152,26 @@ function showOnlineGame() {
         <span>Команда 2: ${teamScores[1]}</span>
       </div>
 
-      <div style="
-        text-align:center;
-        color:#9bb7c8;
-        margin-bottom:10px;
-      ">
+      <div class="online-deal-tricks">
         Взятки за роздачу: ${dealTricks[0]} : ${dealTricks[1]}
       </div>
 
-      <div style="
-        text-align:center;
-        color:#20d9ed;
-        margin-bottom:15px;
-        font-weight:700;
-      ">
+      <div class="online-caller">
         ${caller
           ? 'ТИ ХВАЛИШ! 👑'
           : `Хвалить: ${escapeHtml(onlineGameInfo.players[onlineGameInfo.callerIndex].name)}`}
       </div>
 
       ${!trumpChosen && caller && !onlineGameResult ? `
-        <h3 style="text-align:center">
+        <h3 style="text-align:center;margin:3px">
           ОБЕРИ КОЗИРНУ МАСТЬ
         </h3>
 
-        <div class="suit-buttons" style="
-          display:flex;
-          justify-content:center;
-          gap:12px;
-          margin:15px auto;
-        ">
+        <div class="suit-buttons">
           ${suits.map(suit => `
             <button
               class="suit-btn ${'♥♦'.includes(suit) ? 'red' : ''}"
               data-suit="${suit}"
-              style="
-                font-size:30px;
-                min-width:60px;
-                min-height:60px;
-              "
             >
               ${suit}
             </button>
@@ -1165,13 +1180,7 @@ function showOnlineGame() {
       ` : ''}
 
       ${trumpChosen ? `
-        <div style="
-          text-align:center;
-          color:#20d9ed;
-          font-size:22px;
-          font-weight:800;
-          margin:15px;
-        ">
+        <div class="online-trump">
           КОЗИР: ${onlineGameInfo.trumpSuit}
         </div>
       ` : ''}
@@ -1189,15 +1198,13 @@ function showOnlineGame() {
 
         ${playerElements}
 
-        <!-- Стопка першої команди -->
-<div class="online-pile online-pile-left">
-  ${renderOnlinePile(0, 'КОМАНДА 1')}
-</div>
+        <div class="online-pile online-pile-left">
+          ${renderOnlinePile(0, 'КОМАНДА 1')}
+        </div>
 
-<!-- Стопка другої команди -->
-<div class="online-pile online-pile-right">
-  ${renderOnlinePile(1, 'КОМАНДА 2')}
-</div>
+        <div class="online-pile online-pile-right">
+          ${renderOnlinePile(1, 'КОМАНДА 2')}
+        </div>
 
         <div class="online-center" style="
           position:absolute;
@@ -1228,14 +1235,7 @@ function showOnlineGame() {
 
       </div>
 
-      <div id="game-status" style="
-        text-align:center;
-        min-height:35px;
-        margin:15px auto;
-        color:${myTurn && canPlay ? '#20d9ed' : '#ffffff'};
-        font-size:17px;
-        font-weight:700;
-      ">
+      <div id="game-status" class="online-status">
         ${escapeHtml(statusText)}
       </div>
 
@@ -1302,28 +1302,27 @@ function showOnlineGame() {
           ТВОЇ КАРТИ — ${onlineHand.length}
         </h3>
 
-        <div class="cards" style="
-          display:flex;
-          justify-content:center;
-          flex-wrap:wrap;
-          gap:8px;
-          padding:15px;
-        ">
-          ${sortedHand.map(card => `
-            <button
-              class="card ${card.red || '♥♦'.includes(card.suit) ? 'red' : ''}"
-              data-rank="${card.rank}"
-              data-suit="${card.suit}"
-              ${!canPlay ? 'disabled' : ''}
-              style="
-                cursor:${canPlay ? 'pointer' : 'default'};
-                opacity:${canPlay ? '1' : '.7'};
-              "
-            >
-              <span>${card.rank}</span>
-              <span>${card.suit}</span>
-            </button>
-          `).join('')}
+        <div class="cards">
+          ${sortedHand.map(card => {
+            const cardKey = `${card.rank}${card.suit}`
+            const isHighlighted = highlightedCardKeys.has(cardKey)
+
+            return `
+              <button
+                class="card ${card.red || '♥♦'.includes(card.suit) ? 'red' : ''} ${isHighlighted ? 'suit-highlight' : ''}"
+                data-rank="${card.rank}"
+                data-suit="${card.suit}"
+                ${!canPlay ? 'disabled' : ''}
+                style="
+                  cursor:${canPlay ? 'pointer' : 'default'};
+                  opacity:${isHighlighted ? '1' : canPlay ? '1' : '.7'};
+                "
+              >
+                <span>${card.rank}</span>
+                <span>${card.suit}</span>
+              </button>
+            `
+          }).join('')}
         </div>
       </div>
 
@@ -1349,7 +1348,10 @@ function showOnlineGame() {
   })
 }
 
-// Захист імені від HTML-вставок
+// ========================================
+// ЗАХИСТ ІМЕНІ
+// ========================================
+
 function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, character => ({
     '&': '&amp;',
@@ -1361,68 +1363,121 @@ function escapeHtml(value) {
 }
 
 // ========================================
-// ГОЛОВНЕ МЕНЮ
+// ГОЛОВНЕ МЕНЮ GILA — PUB DESIGN
 // ========================================
 
 function showMenu() {
+  const displayName = playerName.trim() || 'Гравець'
+
   document.querySelector('#app').innerHTML = `
-    <main class="menu">
-      <h1>ГИЛА</h1>
-      <p class="subtitle">Карткова гра 2 на 2</p>
+    <main class="menu menu-pub">
 
-      <input
-        id="player-name"
-        type="text"
-        maxlength="20"
-        placeholder="Твоє ім'я"
-        value="${escapeHtml(playerName)}"
-        style="
-          display:block;
-          box-sizing:border-box;
-          width:min(90%,320px);
-          margin:16px auto;
-          padding:13px;
-          border:1px solid #20d9ed;
-          border-radius:10px;
-          background:#071827;
-          color:white;
-          font-size:16px;
-        "
-      >
+      <div class="menu-decoration">
+        <div class="menu-decoration-card">
+          <span>7</span>
+          <strong>♣</strong>
+          <span>7</span>
+        </div>
+      </div>
 
-      <button id="play">Грати з ботами (тест)</button>
-      <button id="room">Створити кімнату</button>
+      <!-- ПРОФІЛЬ -->
 
-      <div style="margin:18px auto">
+      <div class="profile-bar">
+
+        <div class="profile-avatar">
+          ${escapeHtml(displayName.charAt(0).toUpperCase())}
+        </div>
+
+        <input
+          id="player-name"
+          type="text"
+          maxlength="20"
+          placeholder="Твоє ім'я"
+          value="${escapeHtml(playerName)}"
+        >
+
+      </div>
+
+      <!-- ЛОГОТИП -->
+
+      <div class="menu-sign">
+
+        <div class="sign-ornament">❧ ❦ ❧</div>
+
+        <h1>ГИЛА</h1>
+
+        <div class="sign-divider"></div>
+
+        <p>КАРТКОВА ГРА 2 НА 2</p>
+
+        <div class="sign-ornament bottom-ornament">❧ ❦ ❧</div>
+
+      </div>
+
+      <!-- КНОПКИ -->
+
+      <div class="menu-actions">
+
+        <button id="play" class="pub-button">
+          ГРАТИ З БОТАМИ (ТЕСТ)
+        </button>
+
+        <button id="room" class="pub-button">
+          СТВОРИТИ КІМНАТУ
+        </button>
+
+      </div>
+
+      <!-- ПРИЄДНАННЯ ДО КІМНАТИ -->
+
+      <div class="join-panel">
+
+        <h2>ВВЕСТИ КОД КІМНАТИ</h2>
+
         <input
           id="room-code"
           type="text"
           maxlength="5"
-          placeholder="Код кімнати"
-          style="
-            box-sizing:border-box;
-            width:min(90%,220px);
-            padding:13px;
-            border:1px solid #20d9ed;
-            border-radius:10px;
-            background:#071827;
-            color:white;
-            font-size:16px;
-            text-transform:uppercase;
-            text-align:center;
-          "
+          placeholder="Введіть код кімнати"
+          autocomplete="off"
         >
 
-        <button id="join-room">Приєднатися</button>
+        <button id="join-room" class="pub-button join-button">
+          ПРИЄДНАТИСЯ
+        </button>
+
       </div>
 
       <p class="version">Онлайн-режим GILA</p>
+
     </main>
   `
 
+  const nameInput = document.querySelector('#player-name')
+  const avatar = document.querySelector('.profile-avatar')
+
+  nameInput.addEventListener('input', () => {
+    const name = nameInput.value.trim()
+
+    avatar.textContent = name
+      ? name.charAt(0).toUpperCase()
+      : '?'
+
+    playerName = name
+    localStorage.setItem('gila-player-name', playerName)
+  })
+
   document.querySelector('#play').addEventListener('click', startGame)
+
   document.querySelector('#room').addEventListener('click', createOnlineRoom)
+
   document.querySelector('#join-room').addEventListener('click', joinOnlineRoom)
+
+  document.querySelector('#room-code').addEventListener('keydown', event => {
+    if (event.key === 'Enter') {
+      joinOnlineRoom()
+    }
+  })
 }
 
 showMenu()
