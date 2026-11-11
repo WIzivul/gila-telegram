@@ -1920,3 +1920,385 @@ button {
       rgba(120, 75, 45, .06) 9px
     );
 }
+/* ==========================================
+   GILA — ПОВНОЦІННА МОБІЛЬНА ОПТИМІЗАЦІЯ
+========================================== */
+
+html {
+  min-height: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+}
+
+button {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Телефон */
+
+@media (max-width: 600px) {
+
+  /* Загальна сторінка гри */
+
+  .online-game {
+    width: 100%;
+    min-height: 100dvh;
+    padding: 5px 0 max(10px, env(safe-area-inset-bottom));
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  /* Верхня панель */
+
+  .online-game .game-header {
+    min-height: 38px;
+    padding: 3px 10px;
+    gap: 8px;
+  }
+
+  .online-game .game-header h1 {
+    margin: 0;
+    font-size: clamp(17px, 5vw, 23px);
+    letter-spacing: 2px;
+  }
+
+  .online-game .game-header button {
+    min-height: 34px;
+    padding: 6px 10px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  /* Інформація про гру */
+
+  .online-game .online-round,
+  .online-game .online-deal-tricks,
+  .online-game .online-caller,
+  .online-game .online-trump {
+    margin: 3px auto;
+    padding: 0 5px;
+    font-size: 11px;
+    line-height: 1.3;
+  }
+
+  .online-game .scoreboard {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(15px, 6vw, 35px) !important;
+    margin: 5px auto !important;
+    padding: 3px !important;
+    font-size: 14px;
+  }
+
+  /* Ігровий стіл */
+
+  .online-game .online-table {
+    position: relative;
+    width: calc(100vw - 12px) !important;
+    height: clamp(260px, 43dvh, 370px) !important;
+    min-height: 260px !important;
+    max-height: 370px;
+    margin: 6px auto 8px !important;
+
+    border: 5px solid #68432d !important;
+    border-radius: 36% !important;
+
+    background-position: center !important;
+    background-size: 100% 100% !important;
+
+    overflow: visible !important;
+    flex-shrink: 0;
+  }
+
+  /* Гравці за столом */
+
+  .online-game .online-player {
+    min-width: 0 !important;
+    max-width: 105px;
+    padding: 5px 8px !important;
+    border-width: 2px !important;
+    border-radius: 9px !important;
+    font-size: clamp(9px, 2.8vw, 12px) !important;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .online-game .online-player.top {
+    top: 6px;
+  }
+
+  .online-game .online-player.bottom {
+    bottom: 6px;
+  }
+
+  .online-game .online-player.left {
+    left: 5px;
+  }
+
+  .online-game .online-player.right {
+    right: 5px;
+  }
+
+  /* Сорочки карт суперників */
+
+  .online-game .online-card-back {
+    width: 23px;
+    height: 34px;
+    border-width: 2px !important;
+    border-radius: 5px !important;
+  }
+
+  /* Центр столу */
+
+  .online-game .online-center {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Карти, які вже зіграли */
+
+  .online-game .online-played-card {
+    width: clamp(34px, 10vw, 42px);
+    min-width: 0;
+    min-height: clamp(49px, 14vw, 59px);
+    padding: 3px !important;
+    border-radius: 6px !important;
+    font-size: clamp(13px, 4vw, 17px) !important;
+  }
+
+  .online-game .online-played-card.bottom {
+    left: 50% !important;
+    top: 63% !important;
+    transform: translate(-50%, -50%);
+  }
+
+  .online-game .online-played-card.top {
+    left: 50% !important;
+    top: 37% !important;
+    transform: translate(-50%, -50%);
+  }
+
+  .online-game .online-played-card.left {
+    left: 39% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%);
+  }
+
+  .online-game .online-played-card.right {
+    left: 61% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%);
+  }
+
+  /* Стопки взяток */
+
+  .online-game .online-pile {
+    bottom: 12px !important;
+    width: 65px;
+    transform: scale(.58);
+    transform-origin: bottom center;
+  }
+
+  .online-game .online-pile-left {
+    left: 0 !important;
+    right: auto !important;
+  }
+
+  .online-game .online-pile-right {
+    right: 0 !important;
+    left: auto !important;
+  }
+
+  .online-game .online-pile>div {
+    width: 90px !important;
+    min-height: 115px;
+    padding: 5px !important;
+  }
+
+  .online-game .online-pile .pile-label {
+    font-size: 10px;
+  }
+
+  .online-game .online-pile .pile-score {
+    font-size: 14px;
+  }
+
+  /* Статус гри */
+
+  .online-game .online-status {
+    min-height: 18px;
+    margin: 4px auto;
+    padding: 0 8px;
+    font-size: 11px;
+    line-height: 1.3;
+  }
+
+  /* Рука гравця */
+
+  .online-game .my-hand {
+    position: relative;
+    width: 100%;
+    margin: 5px auto 0 !important;
+    padding: 0;
+    overflow: visible;
+    z-index: 20;
+  }
+
+  .online-game .my-hand h3 {
+    margin: 4px 0 !important;
+    font-size: 12px;
+  }
+
+  .online-game .my-hand .cards {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    justify-content: center !important;
+    align-items: flex-end;
+    gap: clamp(2px, 1vw, 5px) !important;
+
+    width: 100%;
+    padding: 8px 5px 12px !important;
+
+    overflow-x: auto !important;
+    overflow-y: visible !important;
+
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .online-game .my-hand .cards::-webkit-scrollbar {
+    display: none;
+  }
+
+  .online-game .my-hand .card {
+    flex: 0 0 clamp(34px, 10vw, 43px) !important;
+    width: clamp(34px, 10vw, 43px) !important;
+    min-width: clamp(34px, 10vw, 43px) !important;
+    height: clamp(53px, 15vw, 65px) !important;
+
+    padding: 4px !important;
+    border-radius: 7px !important;
+    font-size: 14px;
+    touch-action: manipulation;
+  }
+
+  .online-game .my-hand .card span:first-child {
+    font-size: 13px;
+  }
+
+  .online-game .my-hand .card span:last-child {
+    font-size: 18px;
+  }
+
+  /* Підсвічування дозволених карт */
+
+  .online-game .my-hand .card.suit-highlight {
+    transform: translateY(-5px);
+  }
+
+  .online-game .my-hand .card:not(:disabled):hover {
+    transform: none;
+  }
+
+  /* Прибираємо ефекти, які можуть заважати на слабких телефонах */
+
+  .online-game .online-player.active-player {
+    animation: none;
+  }
+
+  .online-game .my-hand .card.suit-highlight {
+    animation: none;
+  }
+
+  /* Кнопки */
+
+  .online-game button {
+    min-height: 38px;
+  }
+}
+
+/* Дуже вузькі телефони */
+
+@media (max-width: 360px) {
+
+  .online-game .online-table {
+    height: 265px !important;
+    min-height: 265px !important;
+  }
+
+  .online-game .online-player {
+    padding: 4px 5px !important;
+    font-size: 9px !important;
+  }
+
+  .online-game .online-pile {
+    transform: scale(.5);
+  }
+
+  .online-game .my-hand .cards {
+    gap: 2px !important;
+    padding-left: 3px !important;
+    padding-right: 3px !important;
+  }
+
+  .online-game .my-hand .card {
+    flex-basis: 34px !important;
+    width: 34px !important;
+    min-width: 34px !important;
+    height: 52px !important;
+  }
+}
+
+/* Горизонтальна орієнтація телефона */
+
+@media (max-width: 900px) and (orientation: landscape) {
+
+  .online-game {
+    padding-top: 2px;
+  }
+
+  .online-game .online-table {
+    width: min(78vw, 850px) !important;
+    height: 58dvh !important;
+    min-height: 190px !important;
+    max-height: 320px;
+    margin: 4px auto !important;
+  }
+
+  .online-game .online-player {
+    padding: 4px 8px !important;
+  }
+
+  .online-game .my-hand {
+    margin-top: 2px !important;
+  }
+
+  .online-game .my-hand .card {
+    width: 38px !important;
+    min-width: 38px !important;
+    height: 54px !important;
+  }
+
+  .online-game .online-pile {
+    bottom: 5px !important;
+  }
+}
+
+/* Зменшення анімацій */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .online-game *,
+  .online-game *::before,
+  .online-game *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
