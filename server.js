@@ -699,13 +699,15 @@ io.on('connection', socket => {
       return
     }
 
-    const partnerExists = room.players.some(
-      player =>
-        player.id === partnerId &&
-        player.id !== room.host
+    const hostPlayer = room.players.find(
+      player => player.id === room.host
     )
 
-    if (!partnerExists) {
+    const partnerPlayer = room.players.find(
+      player => player.id === partnerId
+    )
+
+    if (!partnerPlayer || partnerId === room.host) {
       callback?.({
         success: false,
         message: 'Неправильний вибір напарника'
@@ -713,6 +715,25 @@ io.on('connection', socket => {
 
       return
     }
+
+    // Два суперники
+    const opponents = room.players.filter(
+      player =>
+        player.id !== room.host &&
+        player.id !== partnerId
+    )
+
+    // Правильний порядок за годинниковою стрілкою:
+    // 0 — лідер
+    // 1 — суперник ліворуч
+    // 2 — напарник навпроти
+    // 3 — суперник праворуч
+    room.players = [
+      hostPlayer,
+      opponents[0],
+      partnerPlayer,
+      opponents[1]
+    ]
 
     room.partnerId = partnerId
 
@@ -724,7 +745,12 @@ io.on('connection', socket => {
     })
 
     console.log(
-      `У кімнаті ${code} лідер вибрав напарника: ${partnerId}`
+      `У кімнаті ${code} вибрано напарника: ${partnerId}`
+    )
+
+    console.log(
+      'Порядок гравців:',
+      room.players.map(player => player.name)
     )
   })
 
@@ -767,6 +793,15 @@ io.on('connection', socket => {
       callback?.({
         success: false,
         message: 'Спочатку вибери собі напарника'
+      })
+
+      return
+    }
+
+    if (room.players[2]?.id !== room.partnerId) {
+      callback?.({
+        success: false,
+        message: 'Помилка розташування гравців. Вибери напарника ще раз.'
       })
 
       return
@@ -1047,6 +1082,7 @@ io.on('connection', socket => {
       card: selectedCard
     })
 
+    // Наступний гравець за годинниковою стрілкою
     room.currentTurn = (room.currentTurn + 1) % 4
 
     callback?.({
@@ -1100,6 +1136,8 @@ io.on('connection', socket => {
         )
 
         currentRoom.currentTrick = []
+
+        // Наступну взятку починає переможець попередньої
         currentRoom.currentTurn = winningPlayer
 
         const finished = currentRoom.hands.every(
